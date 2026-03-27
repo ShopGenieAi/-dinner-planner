@@ -1,387 +1,394 @@
-/**
- * ════════════════════════════════════════════════════════════
- *  MEAL PLAN FIX v2 — Mark & Allie
- *  Paste into Extensions > Apps Script → Run fixAllMealPlan
- * ════════════════════════════════════════════════════════════
- *
- *  Changes from v1:
- *  - Dropdown moved INTO the Dinner heading row (row 29)
- *  - "(👇 swap below)" removed from all headings
- *  - Thu & Sun: two dropdowns merged into ONE on row 29
- *  - Old rows 28/30/31 properly cleared
- *  - Duplicate col-header rows 33-34 fixed (was pulling
- *    MD section headers into ingredient rows)
- *  - All IFS formulas updated to reference $B$29
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Dinner — Mark & Allie</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0f1117;
+  --card:    #181c26;
+  --card2:   #1e2233;
+  --border:  #2a3050;
+  --accent:  #5b8fff;
+  --orange:  #ff8c5b;
+  --green:   #4ade80;
+  --mark:    #93c5fd;
+  --allie:   #f9a8d4;
+  --text:    #e8ecf4;
+  --muted:   #8b92a8;
+  --dim:     #4a5270;
+  --safe-t:  env(safe-area-inset-top, 0px);
+  --safe-b:  env(safe-area-inset-bottom, 20px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100svh; overflow-x:hidden; }
 
-const EM = '\u2014'; // em dash character
+.hdr {
+  padding: calc(var(--safe-t) + 16px) 18px 12px;
+  background: linear-gradient(180deg,#0f1117 70%,transparent);
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.hdr h1 { font-family:'DM Serif Display',serif; font-size:20px; letter-spacing:-.3px; }
+.hdr p  { font-size:11px; color:var(--muted); margin-top:2px; font-weight:300; }
 
-// ════════════════════════════════════════════════════════════
-//  MAIN
-// ════════════════════════════════════════════════════════════
+.days-wrap { overflow-x:auto; scrollbar-width:none; padding:12px 16px 8px; }
+.days-wrap::-webkit-scrollbar { display:none; }
+.days { display:flex; gap:7px; min-width:max-content; }
+.day {
+  padding:7px 14px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--card);
+  color:var(--muted); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .18s; white-space:nowrap;
+  font-family:'DM Sans',sans-serif;
+}
+.day:active { transform:scale(.95); }
+.day.today  { border-color:rgba(255,140,91,.5); color:var(--orange); }
+.day.active { border-color:var(--accent); background:rgba(91,143,255,.15); color:var(--accent); }
+.day.today.active { border-color:var(--orange); background:rgba(255,140,91,.15); color:var(--orange); }
 
-function fixAllMealPlan() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const ui = SpreadsheetApp.getUi();
+.picker-wrap { padding:4px 16px 10px; }
+.picker-label { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); margin-bottom:6px; font-weight:700; }
+.picker-pills { display:flex; gap:6px; flex-wrap:wrap; }
+.mpill {
+  padding:6px 11px; border-radius:8px;
+  border:1.5px solid var(--border); background:var(--card);
+  color:var(--muted); font-size:12px; font-weight:500;
+  cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif;
+}
+.mpill:active { transform:scale(.95); }
+.mpill.active { border-color:var(--green); background:rgba(74,222,128,.1); color:var(--green); }
 
-  try {
-    // Fix Meal Data protein values
-    const md = ss.getSheetByName('Meal Data');
-    if (!md) throw new Error('Cannot find "Meal Data" tab — check tab name is exact.');
-    fixMealDataProteins(md);
-    SpreadsheetApp.flush();
+.main { padding:0 14px calc(var(--safe-b) + 16px); }
+.card { background:var(--card); border-radius:18px; border:1px solid var(--border); overflow:hidden; animation:up .25s ease; max-width:480px; margin:0 auto; }
+@keyframes up { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 
-    // Regular days
-    // [tabName, mdBase (first real ingredient row in MD), heading text]
-    const regularDays = [
-      ['Monday',    26, 'Dinner ' + EM + ' Chicken Mince + Rice'],
-      ['Tuesday',   39, 'Dinner ' + EM + ' Roast Chicken + Air Fry Potatoes'],
-      ['Wednesday', 66, 'Dinner ' + EM + ' Chicken Stir Fry + Soba Noodles'],
-      ['Friday',    26, 'Dinner ' + EM + ' Chicken Mince + Rice'],
-      ['Saturday',  52, 'Dinner ' + EM + ' Roast Chicken + Air Fry Potatoes'],
-    ];
+.chdr {
+  padding:16px 18px 12px;
+  background:linear-gradient(135deg,var(--card2) 0%,var(--card) 100%);
+  border-bottom:1px solid var(--border);
+}
+.ctag {
+  display:inline-flex; align-items:center;
+  padding:3px 9px; border-radius:100px; margin-bottom:8px;
+  background:rgba(91,143,255,.12); border:1px solid rgba(91,143,255,.25);
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent);
+}
+.ctitle { font-family:'DM Serif Display',serif; font-size:22px; line-height:1.15; letter-spacing:-.3px; }
+.csub   { font-size:12px; color:var(--muted); margin-top:4px; font-weight:300; font-style:italic; line-height:1.4; }
 
-    regularDays.forEach(([name, mdBase, heading]) => {
-      const ws = ss.getSheetByName(name);
-      if (!ws) { Logger.log('Tab not found: ' + name); return; }
-      fixRegularDay(ws, mdBase, heading);
-      SpreadsheetApp.flush();
-    });
+.cnote {
+  margin:10px 14px 2px; padding:9px 13px; border-radius:10px;
+  background:rgba(255,140,91,.07); border:1px solid rgba(255,140,91,.2);
+  font-size:12px; color:#ffb380; line-height:1.5;
+}
+.cnote strong { display:block; font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); margin-bottom:2px; }
 
-    // Egg days (Thu & Sun) — single combined dropdown
-    ['Thursday', 'Sunday'].forEach(name => {
-      const ws = ss.getSheetByName(name);
-      if (!ws) { Logger.log('Tab not found: ' + name); return; }
-      fixEggDay(ws);
-      SpreadsheetApp.flush();
-    });
+.sec-hd { padding:8px 18px 2px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); font-weight:700; }
+.ings { padding:4px 0 2px; }
+.irow { padding:9px 18px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.irow:active { background:rgba(255,255,255,.03); }
+.iname { flex:1; font-size:14px; color:var(--text); line-height:1.35; font-weight:300; }
+.iname b { font-weight:700; }
+.iqty { text-align:right; flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
+.q { font-size:14px; font-weight:700; white-space:nowrap; }
+.q.m { color:var(--mark); }
+.q.a { color:var(--allie); }
 
-    ui.alert(
-      '✅  All done!\n\n' +
-      'Dropdowns are now on the Dinner heading row (row 29).\n' +
-      'Thursday & Sunday have one combined dropdown.\n\n' +
-      'Test Monday → change the swap dropdown.\n' +
-      'Test Thursday → try all 7 meal options.'
-    );
+.rcb {
+  margin:2px 12px 5px 14px; padding:9px 13px;
+  border-radius:0 11px 11px 0; border-left:3px solid var(--orange);
+  background:rgba(255,140,91,.05);
+}
+.rcb-hd { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); font-weight:700; margin-bottom:7px; }
+.rcp { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
+.rcp:last-child { margin-bottom:0; }
+.rcwho { font-size:12px; color:var(--muted); font-weight:300; }
+.rcnums { text-align:right; }
+.rcraw { font-size:14px; font-weight:700; display:block; }
+.rcraw.m { color:var(--mark); }
+.rcraw.a { color:var(--allie); }
+.rccook { font-size:11px; color:var(--dim); display:block; font-style:italic; }
 
-  } catch (e) {
-    ui.alert('❌  Error: ' + e.message);
-    Logger.log('ERROR: ' + e.message + '\n' + e.stack);
-  }
+.div { height:1px; background:var(--border); margin:2px 18px; }
+
+.tots { padding:12px 14px 14px; background:var(--card2); border-top:1px solid var(--border); }
+.tots-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:7px; }
+.tbox { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 5px; text-align:center; }
+.tval { font-size:17px; font-weight:700; line-height:1; }
+.tval.m { color:var(--mark); }
+.tval.a { color:var(--allie); }
+.tlbl { font-size:9px; color:var(--dim); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; line-height:1.2; }
+
+.empty { text-align:center; padding:60px 20px; color:var(--muted); max-width:480px; margin:0 auto; }
+.empty span { font-size:52px; display:block; margin-bottom:14px; }
+.empty p { font-size:15px; line-height:1.6; font-weight:300; }
+.fn { text-align:center; padding:10px 0 2px; font-size:11px; color:var(--dim); font-style:italic; max-width:480px; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>🍽️ Dinner Planner</h1>
+  <p id="sub">Mark &amp; Allie — tap a day to see tonight's meal</p>
+</div>
+
+<div class="days-wrap"><div class="days" id="dayPills"></div></div>
+
+<div class="picker-wrap" id="pickerWrap" style="display:none">
+  <div class="picker-label">Choose meal →</div>
+  <div class="picker-pills" id="pickerPills"></div>
+</div>
+
+<div class="main">
+  <div id="cardArea">
+    <div class="empty"><span>👆</span><p>Tap a day above to see your dinner!</p></div>
+  </div>
+</div>
+
+<script>
+const M = {
+  'Chicken Mince + Rice': {
+    e:'🍚', tag:'Mon & Fri', mk:490, ak:451, mp:43, ap:41,
+    sub:'Mince + rice + veg — easy weeknight staple',
+    tip:'🕐 Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.',
+    ings:[
+      {n:'Chicken mince',rc:true,mr:'180g raw',mc:'~130g cooked',ar:'170g raw',ac:'~110g cooked'},
+      {n:'Rice (dry)',rc:true,mr:'50g dry',mc:'~150g cooked',ar:'50g dry',ac:'~150g cooked'},
+      {n:'Tinned flavoured tomatoes',m:'200g',a:'200g'},
+      {n:'Green beans',m:'40g',a:'40g'},
+      {n:'Carrot',m:'30g',a:'30g'},
+      {n:'Red onion',m:'15g',a:'15g'},
+      {n:'Mushrooms',m:null,a:'40g',ao:true},
+    ]
+  },
+  'Roast Chicken + Air Fry Potatoes + Salad': {
+    e:'🍗', tag:'Tuesday', mk:542, ak:472, mp:61, ap:56,
+    sub:'Crispy air fry spuds + roast chicken over fresh salad',
+    tip:'🍟 Potatoes: 180°C 12–15 mins → 200°C 6–8 mins. Salt AFTER cooking only!',
+    ings:[
+      {n:'Roast chicken (cooked)',m:'180g',a:'165g'},
+      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
+      {n:'Olive oil (for potatoes)',m:'5ml',a:'5ml'},
+      {n:'Tomato',m:'30g',a:'30g'},
+      {n:'Carrot',m:'25g',a:'25g'},
+      {n:'Capsicum',m:'25g',a:'25g'},
+      {n:'Gherkin',m:'20g',a:null,mo:true},
+      {n:'Beetroot (canned)',m:null,a:'30g',ao:true},
+    ]
+  },
+  'Roast Chicken + Corn, Beans & Carrot': {
+    e:'🌽', tag:'Saturday', mk:542, ak:462, mp:63, ap:56,
+    sub:'Same roast chicken, heartier veg combo',
+    tip:'🍟 Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.',
+    ings:[
+      {n:'Roast chicken (cooked)',m:'180g',a:'160g'},
+      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
+      {n:'Corn kernels (no added salt)',m:'70g',a:'70g'},
+      {n:'Green beans',m:'50g',a:'50g'},
+      {n:'Carrot',m:'40g',a:'40g'},
+    ]
+  },
+  'Chicken Stir Fry + Soba Noodles': {
+    e:'🥡', tag:'Wednesday', mk:553, ak:476, mp:55, ap:49,
+    sub:'Weigh noodles dry — they triple in volume when cooked!',
+    tip:'⏱ Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.',
+    ings:[
+      {n:'Chicken breast/thigh',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'160g raw',ac:'~98g cooked'},
+      {n:'Japanese Soba Noodles',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
+      {n:'Broccoli',m:'50g',a:'40g'},
+      {n:'Capsicum',m:'50g',a:'50g'},
+      {n:'Corn kernels',m:'40g',a:'40g'},
+      {n:'Red onion',m:'15g',a:'15g'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Scrambled Eggs + Sourdough': {
+    e:'🍳', tag:'Thu & Sun', mk:375, ak:375, mp:22, ap:22,
+    sub:'Quick & clean. Optional veg: spinach, mushroom or tomato',
+    tip:'🧈 5g butter per person. Low heat, creamy scramble — pull off heat while still slightly wet!',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'3 eggs (150g)'},
+      {n:'Ploughmans sourdough',m:'1 slice (35g)',a:'1 slice (35g)'},
+      {n:'Butter',m:'5g',a:'5g'},
+      {n:'Optional veg (spinach / mushroom / tomato)',m:'to taste',a:'to taste'},
+    ]
+  },
+  'Egg Wrap': {
+    e:'🌯', tag:'Thu & Sun', mk:522, ak:432, mp:41, ap:31,
+    sub:'Higher volume — two wraps makes it a proper meal',
+    tip:'💡 Warm wraps in dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
+      {n:'Small wholemeal wraps',m:'2 wraps (80g)',a:'2 wraps (80g)'},
+      {n:'Fresh spinach',m:'20g',a:'20g'},
+      {n:'Capsicum',m:'30g',a:'30g'},
+      {n:'Roast chicken (sliced)',m:'~45g cooked',a:'~35g cooked'},
+    ]
+  },
+  'Eggs + Smashed Avo': {
+    e:'🥑', tag:'Thu & Sun', mk:456, ak:370, mp:27, ap:20,
+    sub:'Weekend vibe — weigh the avo, 40g looks smaller than you think!',
+    tip:'⚖️ Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
+      {n:'Smashed avo (AvoFresh)',m:'40g',a:'30g'},
+      {n:'Sourdough',m:'2 slices (70g)',a:'2 slices (70g)'},
+    ]
+  },
+  'Mediterranean Chicken': {
+    e:'🫒', tag:'Swap — slow cook', mk:486, ak:403, mp:45, ap:34,
+    sub:'Chuck it in the morning — done by dinner. Low sodium.',
+    tip:'🐌 Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!',
+    ings:[
+      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
+      {n:'Vine tomatoes',m:'200g',a:'200g'},
+      {n:'Baby potatoes (whole)',m:'150g',a:'120g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Olives (low sodium)',m:'15g',a:'15g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'Low sodium chicken stock',m:'100ml',a:'100ml'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Slow Cook Roast Beef': {
+    e:'🥩', tag:'Swap — slow cook', mk:574, ak:460, mp:70, ap:56,
+    sub:'Topside or silverside. Sear it first for proper flavour.',
+    tip:'🔪 Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.',
+    ings:[
+      {n:'Roast beef (topside/silverside)',m:'200g cooked',a:'160g cooked'},
+      {n:'Baby potatoes (whole)',m:'200g',a:'160g'},
+      {n:'Carrot',m:'100g',a:'80g'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'No-added-salt beef stock',m:'150ml',a:'150ml'},
+      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
+      {n:'Low sodium Worcestershire',m:'5ml',a:'5ml'},
+      {n:'Olive oil (for searing)',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Baked Chicken Risotto': {
+    e:'🍲', tag:'Swap — oven', mk:657, ak:510, mp:56, ap:42,
+    sub:'Bake covered 180°C 35–40 mins, uncovered last 10 mins',
+    tip:'📍 Weigh arborio rice DRY — it triples in volume when cooked!',
+    ings:[
+      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
+      {n:'Arborio rice',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Corn kernels (no added salt)',m:'40g',a:'30g'},
+      {n:'Broccoli',m:'50g',a:'40g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'No-added-salt chicken stock',m:'200ml',a:'200ml'},
+      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
+      {n:'Parmesan (topping)',m:'10g',a:'10g'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Tortilla Boats': {
+    e:'🌮', tag:'Swap', mk:495, ak:408, mp:57, ap:47,
+    sub:'Season with paprika, cumin, garlic powder — no added salt needed',
+    tip:'🌮 Toast empty tortillas in a dry pan until crispy. Fill and eat straight away!',
+    ings:[
+      {n:'Wholemeal tortillas (24g each)',m:'2 (48g)',a:'2 (48g)'},
+      {n:'Chicken breast (cooked, sliced)',m:'150g cooked',a:'120g cooked'},
+      {n:'Reduced fat cheese (grated)',m:'20g',a:'15g'},
+      {n:'Capsicum (sliced)',m:'40g',a:'40g'},
+      {n:'Spinach',m:'20g',a:'20g'},
+      {n:'Tomato (diced)',m:'30g',a:'30g'},
+      {n:'Greek yoghurt (topping)',m:'30g',a:'30g'},
+    ]
+  },
+};
+
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const PLAN = {
+  Monday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Tuesday:   {def:'Roast Chicken + Air Fry Potatoes + Salad',opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Wednesday: {def:'Chicken Stir Fry + Soba Noodles',opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Thursday:  {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Friday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Saturday:  {def:'Roast Chicken + Corn, Beans & Carrot',opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Sunday:    {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+};
+
+const TODAY = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+let curDay = null, curMeal = null;
+
+function buildDays() {
+  document.getElementById('dayPills').innerHTML = DAYS.map(d =>
+    `<button class="day${d===TODAY?' today':''}" onclick="pickDay('${d}')">${d.slice(0,3)}${d===TODAY?' ★':''}</button>`
+  ).join('');
 }
 
-// ════════════════════════════════════════════════════════════
-//  REGULAR DAY  (Mon, Tue, Wed, Fri, Sat)
-//
-//  Layout after fix:
-//    Row 28: CLEARED (was dropdown)
-//    Row 29: Dinner heading in A29  |  Dropdown in B29
-//    Row 30: CLEARED (was "Choose dinner swap" label)
-//    Row 31: Column headers (static text)
-//    Rows 32–41: IFS ingredient formulas (10 rows)
-//    Row 42: Meal totals SUM
-// ════════════════════════════════════════════════════════════
-
-function fixRegularDay(ws, mdBase, heading) {
-  const name = ws.getName();
-
-  // ── Clear old layout ──
-  ws.getRange(28, 1, 1, 11).clearContent().clearDataValidations(); // old dropdown row
-  ws.getRange(30, 1, 1, 11).clearContent().clearDataValidations(); // old label row
-  ws.getRange(43, 1, 2, 11).clearContent();                        // stray rows 43-44
-
-  // ── Row 29: clean heading + dropdown ──
-  ws.getRange(29, 1, 1, 11).breakApart(); // unmerge if merged
-  ws.getRange(29, 1).setValue(heading);
-
-  const swapOpts = [
-    EM + ' Keep Current Dinner ' + EM,
-    'Mediterranean Chicken',
-    'Slow Cook Roast Beef',
-    'Baked Chicken Risotto',
-    'Tortilla Boats',
-  ];
-  setDropdown(ws, 29, 2, swapOpts);
-
-  // Set a valid default if current value is missing/invalid
-  const cur = ws.getRange(29, 2).getValue();
-  if (!swapOpts.includes(cur)) {
-    ws.getRange(29, 2).setValue(EM + ' Keep Current Dinner ' + EM);
-  }
-
-  // ── Row 31: static column headers ──
-  const headers = ['Ingredient','Mark Qty','Mark Unit','Mark grams','Mark kcal',
-                   'Mark protein','Allie Qty','Allie Unit','Allie grams','Allie kcal','Allie protein'];
-  headers.forEach((h, i) => ws.getRange(31, i + 1).setValue(h));
-
-  // ── Rows 32–41: IFS ingredient formulas (10 rows) ──
-  for (let i = 0; i < 10; i++) {
-    const r = 32 + i;
-    ws.getRange(r,  1).setFormula(regIFS('B', mdBase, i, false)); // Ingredient name
-    ws.getRange(r,  2).setFormula(regIFS('C', mdBase, i, false)); // Mark Qty
-    ws.getRange(r,  3).setValue('g');
-    ws.getRange(r,  4).setFormula(regIFS('D', mdBase, i, true));  // Mark grams
-    ws.getRange(r,  5).setFormula(regIFS('E', mdBase, i, true));  // Mark kcal
-    ws.getRange(r,  6).setFormula(regIFS('F', mdBase, i, true));  // Mark protein
-    ws.getRange(r,  7).setFormula(regIFS('G', mdBase, i, false)); // Allie Qty
-    ws.getRange(r,  8).setValue('g');
-    ws.getRange(r,  9).setFormula(regIFS('H', mdBase, i, true));  // Allie grams
-    ws.getRange(r, 10).setFormula(regIFS('I', mdBase, i, true));  // Allie kcal
-    ws.getRange(r, 11).setFormula(regIFS('J', mdBase, i, true));  // Allie protein
-  }
-
-  // ── Row 42: Meal totals ──
-  ws.getRange(42,  4).setFormula('=SUM(D32:D41)');
-  ws.getRange(42,  5).setFormula('=SUM(E32:E41)');
-  ws.getRange(42,  6).setFormula('=SUM(F32:F41)');
-  ws.getRange(42,  9).setFormula('=SUM(I32:I41)');
-  ws.getRange(42, 10).setFormula('=SUM(J32:J41)');
-  ws.getRange(42, 11).setFormula('=SUM(K32:K41)');
-
-  Logger.log(name + ': done — dropdown on row 29, ingredients rows 32-41');
+function pickDay(d) {
+  curDay = d; curMeal = PLAN[d].def;
+  document.querySelectorAll('.day').forEach((el,i) => el.classList.toggle('active', DAYS[i]===d));
+  document.querySelectorAll('.day')[DAYS.indexOf(d)].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  document.getElementById('pickerWrap').style.display = 'block';
+  buildPicker(); buildCard();
 }
 
-// ════════════════════════════════════════════════════════════
-//  EGG DAY  (Thu & Sun)
-//
-//  Layout after fix:
-//    Row 28: CLEARED (had two old dropdowns B28 + C28)
-//    Row 29: Heading in A29  |  SINGLE combined dropdown in B29
-//    Row 30: CLEARED (was "Choose egg meal" label)
-//    Row 31: CLEARED (was "Or swap to slow cook" label)
-//    Row 32: Column headers (static text)
-//    Rows 33–40: IFS ingredient formulas (8 rows)
-//    Row 41: CLEARED
-//    Row 42: Meal totals SUM
-//
-//  Single dropdown has ALL 7 options:
-//    3 egg meals + 4 slow cook swaps
-// ════════════════════════════════════════════════════════════
-
-function fixEggDay(ws) {
-  const name = ws.getName();
-
-  // ── Clear old layout ──
-  ws.getRange(28, 1, 1, 11).clearContent().clearDataValidations(); // old dual dropdown row
-  ws.getRange(30, 1, 2, 11).clearContent().clearDataValidations(); // old label rows 30-31
-  ws.getRange(41, 1, 1, 11).clearContent();                        // stray row 41
-  ws.getRange(43, 1, 2, 11).clearContent();                        // stray rows 43-44
-
-  // ── Row 29: clean heading + single dropdown ──
-  ws.getRange(29, 1, 1, 11).breakApart(); // unmerge if merged
-  ws.getRange(29, 1).setValue('Dinner ' + EM + ' Choose your meal:');
-
-  const allOpts = [
-    'Scrambled Eggs + Sourdough',
-    'Egg Wrap',
-    'Eggs + Smashed Avo',
-    'Mediterranean Chicken',
-    'Slow Cook Roast Beef',
-    'Baked Chicken Risotto',
-    'Tortilla Boats',
-  ];
-  setDropdown(ws, 29, 2, allOpts);
-
-  const cur = ws.getRange(29, 2).getValue();
-  if (!allOpts.includes(cur)) {
-    ws.getRange(29, 2).setValue('Scrambled Eggs + Sourdough');
-  }
-
-  // ── Row 32: static column headers ──
-  const headers = ['Ingredient','Mark Qty','Mark Unit','Mark grams','Mark kcal',
-                   'Mark protein','Allie Qty','Allie Unit','Allie grams','Allie kcal','Allie protein'];
-  headers.forEach((h, i) => ws.getRange(32, i + 1).setValue(h));
-
-  // ── Rows 33–40: IFS ingredient formulas (8 rows) ──
-  for (let i = 0; i < 8; i++) {
-    const r = 33 + i;
-    ws.getRange(r,  1).setFormula(eggIFS('B', i, false));
-    ws.getRange(r,  2).setFormula(eggIFS('C', i, false));
-    ws.getRange(r,  3).setValue('g');
-    ws.getRange(r,  4).setFormula(eggIFS('D', i, true));
-    ws.getRange(r,  5).setFormula(eggIFS('E', i, true));
-    ws.getRange(r,  6).setFormula(eggIFS('F', i, true));
-    ws.getRange(r,  7).setFormula(eggIFS('G', i, false));
-    ws.getRange(r,  8).setValue('g');
-    ws.getRange(r,  9).setFormula(eggIFS('H', i, true));
-    ws.getRange(r, 10).setFormula(eggIFS('I', i, true));
-    ws.getRange(r, 11).setFormula(eggIFS('J', i, true));
-  }
-
-  // ── Row 42: Meal totals ──
-  ws.getRange(42,  4).setFormula('=SUM(D33:D40)');
-  ws.getRange(42,  5).setFormula('=SUM(E33:E40)');
-  ws.getRange(42,  6).setFormula('=SUM(F33:F40)');
-  ws.getRange(42,  9).setFormula('=SUM(I33:I40)');
-  ws.getRange(42, 10).setFormula('=SUM(J33:J40)');
-  ws.getRange(42, 11).setFormula('=SUM(K33:K40)');
-
-  Logger.log(name + ': done — single dropdown on row 29, ingredients rows 33-40');
+function buildPicker() {
+  document.getElementById('pickerPills').innerHTML = PLAN[curDay].opts.map(o => {
+    const short = o.length > 26 ? o.split(' ').slice(0,3).join(' ')+'…' : o;
+    return `<button class="mpill${o===curMeal?' active':''}" onclick="pickMeal('${o.replace(/'/g,"\\'")}')"> ${M[o].e} ${short}</button>`;
+  }).join('');
 }
 
-// ════════════════════════════════════════════════════════════
-//  FORMULA BUILDERS
-// ════════════════════════════════════════════════════════════
+function pickMeal(m) { curMeal = m; buildPicker(); buildCard(); }
 
-/**
- * Regular day IFS formula.
- * Dropdown is now at $B$29.
- *
- * Default MD row = mdBase + i  (first real ingredient, not col headers)
- * Swap MD starts (first real ingredient in each swap section):
- *   Med Chicken  → row 108
- *   Roast Beef   → row 124
- *   Risotto      → row 140
- *   Tortilla     → row 156
- */
-function regIFS(col, mdBase, i, isNum) {
-  const e  = isNum ? '0' : '""';
-  const dc = '$B$29';
-  return (
-    `=IFS(${dc}="${EM} Keep Current Dinner ${EM}",'Meal Data'!${col}${mdBase + i},` +
-    `${dc}="Mediterranean Chicken",'Meal Data'!${col}${108 + i},` +
-    `${dc}="Slow Cook Roast Beef",'Meal Data'!${col}${124 + i},` +
-    `${dc}="Baked Chicken Risotto",'Meal Data'!${col}${140 + i},` +
-    `${dc}="Tortilla Boats",'Meal Data'!${col}${156 + i},` +
-    `TRUE,${e})`
-  );
-}
-
-/**
- * Egg day IFS formula — single dropdown at $B$29.
- *
- * Egg meal MD starts (first real ingredient row, SKIPPING section + col headers):
- *   Scrambled Eggs → MD row 77  (rows 77-81, max 5 ingredients)
- *   Egg Wrap       → MD row 85  (rows 85-89, max 5 ingredients)
- *   Eggs + Avo     → MD row 93  (rows 93-95, max 3 ingredients)
- *
- * Slow cook swap MD starts (same as regular days):
- *   Med Chicken  → MD row 108
- *   Roast Beef   → MD row 124
- *   Risotto      → MD row 140
- *   Tortilla     → MD row 156
- *
- * For egg meals, once we go past their ingredient count we return ""
- * so no junk from the next section header bleeds into the table.
- */
-function eggIFS(col, i, isNum) {
-  const e  = isNum ? '0' : '""';
-  const dc = '$B$29';
-
-  // Egg meal rows — return empty string if past their ingredient count
-  const scRow = (i < 5) ? `'Meal Data'!${col}${77 + i}` : e;  // Scrambled: 5 rows
-  const wrRow = (i < 5) ? `'Meal Data'!${col}${85 + i}` : e;  // Egg Wrap:  5 rows
-  const avRow = (i < 3) ? `'Meal Data'!${col}${93 + i}` : e;  // Avo:       3 rows
-
-  return (
-    `=IFS(${dc}="Scrambled Eggs + Sourdough",${scRow},` +
-    `${dc}="Egg Wrap",${wrRow},` +
-    `${dc}="Eggs + Smashed Avo",${avRow},` +
-    `${dc}="Mediterranean Chicken",'Meal Data'!${col}${108 + i},` +
-    `${dc}="Slow Cook Roast Beef",'Meal Data'!${col}${124 + i},` +
-    `${dc}="Baked Chicken Risotto",'Meal Data'!${col}${140 + i},` +
-    `${dc}="Tortilla Boats",'Meal Data'!${col}${156 + i},` +
-    `TRUE,${e})`
-  );
-}
-
-// ════════════════════════════════════════════════════════════
-//  HELPER
-// ════════════════════════════════════════════════════════════
-
-function setDropdown(ws, row, col, options) {
-  const rule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(options, true)
-    .setAllowInvalid(false)
-    .build();
-  ws.getRange(row, col).setDataValidation(rule);
-}
-
-// ════════════════════════════════════════════════════════════
-//  MEAL DATA PROTEIN FIXES
-//  Verified against NZ nutritional data:
-//    Chicken raw 23g/100g | Chicken cooked 31g/100g
-//    Beef cooked 29g/100g | Eggs 13g/100g | Soba dry 14g/100g
-//    Potato 2g/100g | Stock 0g | Olive oil 0g | Broccoli 2.8g/100g
-// ════════════════════════════════════════════════════════════
-
-function fixMealDataProteins(md) {
-  // [row, Mark protein (col F=6), Allie protein (col J=10)]
-  const fixes = [
-    [47,   0.0,  0.5],  // Beetroot canned 30g
-    [52,  55.8, 49.6],  // Chicken cooked Sat 180g/160g: 31g/100g
-    [53,   4.4,  3.6],  // Potatoes raw Sat 220g/180g — WAS 68.2 (beef value here!)
-    [55,   2.2,  2.2],  // Corn kernels 70g: 3.2g/100g
-    [56,   0.9,  0.9],  // Green beans 50g: 1.8g/100g
-    [57,   0.4,  0.4],  // Carrot 40g: 0.9g/100g
-    [66,  41.4, 36.8],  // Chicken raw stir fry 180g/160g: 23g/100g
-    [68,   9.8,  7.7],  // Soba noodles dry 70g/55g: 14g/100g
-    [69,   1.4,  1.1],  // Broccoli 50g/40g: 2.8g/100g — WAS 11.5 (wrong!)
-    [70,   0.5,  0.5],  // Capsicum stir fry 50g: 1g/100g
-    [71,   1.3,  1.3],  // Corn stir fry 40g: 3.2g/100g
-    [72,   0.2,  0.2],  // Red onion 15g: 1.1g/100g
-    [73,   0.0,  0.0],  // Olive oil: 0g protein
-    [80,   0.0,  0.0],  // Butter 5g: ~0
-    [85,  19.5, 13.0],  // Eggs egg wrap 3/2: 13g/100g
-    [86,   6.4,  6.4],  // Wraps 80g: 8g/100g
-    [87,   0.6,  0.6],  // Spinach 20g: 2.9g/100g
-    [88,   0.3,  0.3],  // Capsicum 30g: 1g/100g
-    [89,  14.0, 10.9],  // Roast chicken ~45g/~35g: 31g/100g — grams also fixed below
-    [93,  19.5, 13.0],  // Eggs avo 3/2: 13g/100g — WAS 46.5 (completely wrong!)
-    [94,   0.8,  0.6],  // Smashed avo 40g/30g: 2g/100g
-    [95,   6.3,  6.3],  // Sourdough 70g: 9g/100g
-    [102, 20.4, 15.3],  // Yoplait 227g/170g: 9g/100g
-    [103, 17.0, 12.8],  // Anchor 227g/170g: 7.5g/100g
-    [108, 41.4, 29.9],  // Med chicken raw 180g/130g: 23g/100g
-    [110,  1.8,  1.8],  // Vine tomatoes 200g: 0.9g/100g
-    [111,  3.0,  2.4],  // Baby potatoes Med 150g/120g: 2g/100g
-    [116,  0.0,  0.0],  // Chicken stock 100ml: 0g — WAS 6.4 (stock is water!)
-    [124, 58.0, 46.4],  // Roast beef cooked 200g/160g: 29g/100g
-    [125,  4.0,  3.2],  // Baby potatoes beef 200g/160g: 2g/100g — WAS 58.0 (beef value!)
-    [130,  0.0,  0.0],  // Beef stock 150ml: 0g — WAS 9.6 (stock is water!)
-    [140, 41.4, 29.9],  // Risotto chicken raw 180g/130g: 23g/100g
-    [142,  4.9,  3.9],  // Arborio rice dry 70g/55g: 7g/100g
-    [144,  0.8,  0.8],  // Capsicum risotto 75g: 1g/100g
-    [147,  0.4,  0.4],  // Onion risotto 40g: 1.1g/100g
-    [149,  0.0,  0.0],  // Chicken stock risotto 200ml: 0g — WAS 12.8 (wrong!)
-    [151,  3.5,  3.5],  // Parmesan 10g: 35g/100g — WAS 0.4 (wrong!)
-    [152,  0.0,  0.0],  // Olive oil: 0g — WAS 1.6 (wrong!)
-    [156,  4.2,  4.2],  // Tortillas 48g: 8.8g/100g
-    [157, 46.5, 37.2],  // Chicken cooked tortilla 150g/120g: 31g/100g — WAS 13.2!
-    [158,  5.0,  3.8],  // Cheese 20g/15g: 25g/100g — WAS 46.5 (chicken value here!)
-    [159,  0.4,  0.4],  // Capsicum tortilla 40g: 1g/100g — WAS 10.0 (wrong!)
-    [161,  0.3,  0.3],  // Tomato diced 30g: 0.9g/100g
-    [162,  2.8,  2.8],  // Greek yoghurt topping 30g: 9.3g/100g — WAS 0.3 (wrong!)
-  ];
-
-  fixes.forEach(([r, mP, aP]) => {
-    md.getRange(r, 6).setValue(mP);
-    md.getRange(r, 10).setValue(aP);
+function buildCard() {
+  const m = M[curMeal]; if (!m) return;
+  let ings = '';
+  m.ings.forEach((ing, i) => {
+    if (i > 0) ings += '<div class="div"></div>';
+    if (ing.rc) {
+      ings += `<div class="irow"><div class="iname"><b>${ing.n}</b></div></div>
+        <div class="rcb">
+          <div class="rcb-hd">⚖️ Weigh raw — serve as cooked weight</div>
+          <div class="rcp"><span class="rcwho">💙 Mark</span><div class="rcnums"><span class="rcraw m">${ing.mr}</span><span class="rccook">${ing.mc}</span></div></div>
+          <div class="rcp"><span class="rcwho">💗 Allie</span><div class="rcnums"><span class="rcraw a">${ing.ar}</span><span class="rccook">${ing.ac}</span></div></div>
+        </div>`;
+    } else {
+      const tag = ing.mo ? '<br><small style="color:var(--dim);font-size:11px">💙 Mark only</small>'
+                : ing.ao ? '<br><small style="color:var(--dim);font-size:11px">💗 Allie only</small>' : '';
+      const mq = ing.m && !ing.ao ? `<span class="q m">💙 ${ing.m}</span>` : '';
+      const aq = ing.a && !ing.mo ? `<span class="q a">💗 ${ing.a}</span>` : '';
+      ings += `<div class="irow"><div class="iname">${ing.n}${tag}</div><div class="iqty">${mq}${aq}</div></div>`;
+    }
   });
 
-  // Clear stray 0.0 from section header / note rows
-  [54, 67, 75, 82, 83, 90, 91, 98, 99, 105, 106, 109, 141, 143, 153, 163]
-    .forEach(r => {
-      md.getRange(r,  6).clearContent();
-      md.getRange(r, 10).clearContent();
-    });
-
-  // Clear orphaned row 97 (had data but no ingredient name)
-  md.getRange(97, 1, 1, 10).clearContent();
-
-  // Fix col-header rows that had 0.0 instead of header text
-  [84, 92, 107].forEach(r => {
-    md.getRange(r,  6).setValue('Mark protein');
-    md.getRange(r, 10).setValue('Allie protein');
-  });
-
-  // Fix egg wrap row 89: grams were wrong (150g → 45g Mark / 35g Allie)
-  md.getRange(89, 3).setValue('40-50g');
-  md.getRange(89, 4).setValue(45);
-  md.getRange(89, 5).setValue(70);
-  md.getRange(89, 7).setValue('30-40g');
-  md.getRange(89, 8).setValue(35);
-  md.getRange(89, 9).setValue(54);
-
-  Logger.log('Meal Data: all protein values corrected');
+  document.getElementById('cardArea').innerHTML = `
+    <div class="card">
+      <div class="chdr">
+        <div class="ctag">🗓 ${m.tag}</div>
+        <div class="ctitle">${m.e} ${curMeal}</div>
+        <div class="csub">${m.sub}</div>
+      </div>
+      ${m.tip ? `<div class="cnote"><strong>Tip</strong>${m.tip}</div>` : ''}
+      <div class="sec-hd">Ingredients</div>
+      <div class="ings">${ings}</div>
+      <div class="tots">
+        <div class="tots-grid">
+          <div class="tbox"><div class="tval m">~${m.mk}</div><div class="tlbl">💙 Mark kcal</div></div>
+          <div class="tbox"><div class="tval a">~${m.ak}</div><div class="tlbl">💗 Allie kcal</div></div>
+          <div class="tbox"><div class="tval m">${m.mp}g</div><div class="tlbl">💙 protein</div></div>
+          <div class="tbox"><div class="tval a">${m.ap}g</div><div class="tlbl">💗 protein</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="fn">Quantities match the spreadsheet</div>`;
 }
+
+buildDays();
+document.getElementById('sub').textContent = 'Today is ' + TODAY + ' — tap a day to see your meal';
+pickDay(TODAY);
+</script>
+</body>
+</html>
