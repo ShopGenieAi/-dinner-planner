@@ -4,157 +4,350 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Dinner — Mark & Allie</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:      #0f1117;
-  --card:    #181c26;
-  --card2:   #1e2233;
-  --border:  #2a3050;
-  --accent:  #5b8fff;
-  --orange:  #ff8c5b;
-  --green:   #4ade80;
-  --mark:    #93c5fd;
-  --allie:   #f9a8d4;
-  --text:    #e8ecf4;
-  --muted:   #8b92a8;
-  --dim:     #4a5270;
-  --safe-t:  env(safe-area-inset-top, 0px);
-  --safe-b:  env(safe-area-inset-bottom, 20px);
+  --bg:       #080a0f;
+  --glass:    rgba(255,255,255,0.04);
+  --glass2:   rgba(255,255,255,0.08);
+  --border:   rgba(255,255,255,0.08);
+  --border2:  rgba(255,255,255,0.14);
+  --text:     #f0f2f8;
+  --muted:    rgba(240,242,248,0.45);
+  --dim:      rgba(240,242,248,0.22);
+  --mark:     #60a5fa;
+  --allie:    #f472b6;
+  --safe-t:   env(safe-area-inset-top,0px);
+  --safe-b:   env(safe-area-inset-bottom,20px);
+  /* meal colour palettes */
+  --c1: #f97316; --c1b: #7c2d12;
+  --c2: #a78bfa; --c2b: #3b1f6e;
+  --c3: #34d399; --c3b: #064e3b;
+  --c4: #fb923c; --c4b: #7c2d12;
+  --c5: #fbbf24; --c5b: #78350f;
+  --c6: #38bdf8; --c6b: #0c4a6e;
+  --c7: #f87171; --c7b: #7f1d1d;
 }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100svh; overflow-x:hidden; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100svh;
+  overflow-x:hidden;
+}
 
-.hdr {
-  padding: calc(var(--safe-t) + 16px) 18px 12px;
-  background: linear-gradient(180deg,#0f1117 70%,transparent);
-  position:sticky; top:0; z-index:100;
-  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+/* ── GRAIN OVERLAY ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.6;
+}
+
+/* ── AMBIENT GLOW ── */
+.glow{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+  z-index:0;
+  transition:all 1.2s ease;
+}
+.glow1{width:400px;height:400px;top:-100px;right:-100px;background:rgba(249,115,22,0.12);}
+.glow2{width:300px;height:300px;bottom:100px;left:-80px;background:rgba(167,139,250,0.1);}
+
+/* ── HEADER ── */
+.hdr{
+  position:sticky;top:0;z-index:200;
+  padding:calc(var(--safe-t) + 14px) 20px 12px;
+  background:rgba(8,10,15,0.85);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
 }
-.hdr h1 { font-family:'DM Serif Display',serif; font-size:20px; letter-spacing:-.3px; }
-.hdr p  { font-size:11px; color:var(--muted); margin-top:2px; font-weight:300; }
-
-.days-wrap { overflow-x:auto; scrollbar-width:none; padding:12px 16px 8px; }
-.days-wrap::-webkit-scrollbar { display:none; }
-.days { display:flex; gap:7px; min-width:max-content; }
-.day {
-  padding:7px 14px; border-radius:100px;
-  border:1.5px solid var(--border); background:var(--card);
-  color:var(--muted); font-size:13px; font-weight:600;
-  cursor:pointer; transition:all .18s; white-space:nowrap;
-  font-family:'DM Sans',sans-serif;
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;}
+.hdr-left h1{
+  font-family:'Playfair Display',serif;
+  font-size:22px;letter-spacing:-.3px;
+  background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.6) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.day:active { transform:scale(.95); }
-.day.today  { border-color:rgba(255,140,91,.5); color:var(--orange); }
-.day.active { border-color:var(--accent); background:rgba(91,143,255,.15); color:var(--accent); }
-.day.today.active { border-color:var(--orange); background:rgba(255,140,91,.15); color:var(--orange); }
-
-.picker-wrap { padding:4px 16px 10px; }
-.picker-label { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); margin-bottom:6px; font-weight:700; }
-.picker-pills { display:flex; gap:6px; flex-wrap:wrap; }
-.mpill {
-  padding:6px 11px; border-radius:8px;
-  border:1.5px solid var(--border); background:var(--card);
-  color:var(--muted); font-size:12px; font-weight:500;
-  cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif;
+.hdr-left p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:300;}
+.today-badge{
+  padding:5px 12px;border-radius:100px;
+  background:var(--glass2);border:1px solid var(--border2);
+  font-size:11px;font-weight:600;color:var(--text);
+  white-space:nowrap;
 }
-.mpill:active { transform:scale(.95); }
-.mpill.active { border-color:var(--green); background:rgba(74,222,128,.1); color:var(--green); }
 
-.main { padding:0 14px calc(var(--safe-b) + 16px); }
-.card { background:var(--card); border-radius:18px; border:1px solid var(--border); overflow:hidden; animation:up .25s ease; max-width:480px; margin:0 auto; }
-@keyframes up { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+/* ── DAY STRIP ── */
+.days-outer{overflow-x:auto;scrollbar-width:none;padding:14px 16px 10px;}
+.days-outer::-webkit-scrollbar{display:none;}
+.days-row{display:flex;gap:8px;min-width:max-content;}
 
-.chdr {
-  padding:16px 18px 12px;
-  background:linear-gradient(135deg,var(--card2) 0%,var(--card) 100%);
+.day-btn{
+  display:flex;flex-direction:column;align-items:center;
+  padding:10px 14px;border-radius:16px;
+  border:1px solid var(--border);
+  background:var(--glass);
+  cursor:pointer;transition:all .2s;
+  font-family:'Outfit',sans-serif;
+  position:relative;overflow:hidden;
+}
+.day-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 100%);
+  opacity:0;transition:opacity .2s;
+}
+.day-btn:active{transform:scale(.94);}
+.day-btn.active::before{opacity:1;}
+.day-short{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.day-num{font-size:10px;font-weight:400;color:var(--dim);margin-top:2px;}
+.day-dot{width:4px;height:4px;border-radius:50%;margin-top:4px;background:transparent;transition:background .2s;}
+.day-btn.today .day-short{color:var(--text);}
+.day-btn.today .day-dot{background:var(--c1);}
+.day-btn.active .day-short{color:#fff;}
+.day-btn.active{border-color:rgba(255,255,255,.2);background:var(--glass2);}
+.day-btn.active .day-dot{background:#fff;}
+
+/* ── MEAL PICKER ── */
+.picker-outer{padding:2px 16px 12px;}
+.picker-scroll{overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.picker-scroll::-webkit-scrollbar{display:none;}
+.picker-row{display:flex;gap:7px;min-width:max-content;}
+
+.meal-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:100px;
+  border:1px solid var(--border);
+  background:var(--glass);
+  cursor:pointer;transition:all .2s;
+  font-family:'Outfit',sans-serif;
+  font-size:12px;font-weight:500;color:var(--muted);
+  white-space:nowrap;
+}
+.meal-chip:active{transform:scale(.95);}
+.meal-chip.active{
+  border-color:rgba(255,255,255,.25);
+  background:var(--glass2);
+  color:var(--text);
+}
+.meal-chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ── HERO CARD ── */
+.main{padding:0 14px calc(var(--safe-b) + 20px);position:relative;z-index:1;}
+.card-wrap{max-width:480px;margin:0 auto;}
+
+.hero-card{
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid var(--border2);
+  animation:cardIn .35s cubic-bezier(.2,0,.2,1);
+  position:relative;
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(20px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* dynamic colour hero */
+.hero-banner{
+  padding:22px 22px 18px;
+  position:relative;overflow:hidden;
+  min-height:130px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.hero-banner::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--meal-c1) 0%,var(--meal-c2) 100%);
+  opacity:.18;
+}
+.hero-banner::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(8,10,15,.9) 100%);
+}
+.hero-emoji{
+  position:absolute;top:16px;right:18px;
+  font-size:56px;opacity:.35;
+  filter:drop-shadow(0 0 20px var(--meal-c1));
+  z-index:1;
+}
+.hero-tag{
+  position:relative;z-index:2;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:100px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:rgba(255,255,255,.8);
+  margin-bottom:8px;width:fit-content;
+}
+.hero-title{
+  font-family:'Playfair Display',serif;
+  font-size:24px;line-height:1.15;
+  position:relative;z-index:2;
+  text-shadow:0 2px 20px rgba(0,0,0,.5);
+}
+.hero-sub{
+  font-size:12px;color:rgba(255,255,255,.55);
+  margin-top:4px;font-weight:300;font-style:italic;
+  position:relative;z-index:2;line-height:1.4;
+}
+
+/* cook tip */
+.cook-tip{
+  margin:0;padding:12px 18px;
+  background:rgba(255,255,255,.03);
   border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:10px;
 }
-.ctag {
-  display:inline-flex; align-items:center;
-  padding:3px 9px; border-radius:100px; margin-bottom:8px;
-  background:rgba(91,143,255,.12); border:1px solid rgba(91,143,255,.25);
-  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent);
+.tip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.tip-text{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;font-weight:300;}
+.tip-text strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.35);margin-bottom:2px;font-weight:600;}
+
+/* ingredients */
+.ing-section{background:rgba(8,10,15,.95);}
+.ing-hd{
+  padding:12px 18px 4px;
+  font-size:9px;text-transform:uppercase;letter-spacing:2px;
+  color:var(--dim);font-weight:700;
 }
-.ctitle { font-family:'DM Serif Display',serif; font-size:22px; line-height:1.15; letter-spacing:-.3px; }
-.csub   { font-size:12px; color:var(--muted); margin-top:4px; font-weight:300; font-style:italic; line-height:1.4; }
 
-.cnote {
-  margin:10px 14px 2px; padding:9px 13px; border-radius:10px;
-  background:rgba(255,140,91,.07); border:1px solid rgba(255,140,91,.2);
-  font-size:12px; color:#ffb380; line-height:1.5;
+.ing-row{
+  padding:10px 18px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
 }
-.cnote strong { display:block; font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); margin-bottom:2px; }
+.ing-row:active{background:rgba(255,255,255,.03);}
+.ing-name{flex:1;font-size:13.5px;color:rgba(255,255,255,.75);line-height:1.35;font-weight:300;}
+.ing-name strong{font-weight:600;color:var(--text);}
+.ing-only{display:block;font-size:10px;color:var(--dim);margin-top:2px;}
+.ing-qty{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.qty{font-size:13px;font-weight:700;white-space:nowrap;}
+.qty.m{color:var(--mark);}
+.qty.a{color:var(--allie);}
 
-.sec-hd { padding:8px 18px 2px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); font-weight:700; }
-.ings { padding:4px 0 2px; }
-.irow { padding:9px 18px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
-.irow:active { background:rgba(255,255,255,.03); }
-.iname { flex:1; font-size:14px; color:var(--text); line-height:1.35; font-weight:300; }
-.iname b { font-weight:700; }
-.iqty { text-align:right; flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
-.q { font-size:14px; font-weight:700; white-space:nowrap; }
-.q.m { color:var(--mark); }
-.q.a { color:var(--allie); }
-
-.rcb {
-  margin:2px 12px 5px 14px; padding:9px 13px;
-  border-radius:0 11px 11px 0; border-left:3px solid var(--orange);
-  background:rgba(255,140,91,.05);
+/* raw/cooked */
+.rc-wrap{
+  margin:2px 14px 6px 16px;
+  border-radius:0 14px 14px 0;
+  border-left:2px solid var(--meal-c1,var(--c1));
+  background:rgba(255,255,255,.03);
+  overflow:hidden;
 }
-.rcb-hd { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); font-weight:700; margin-bottom:7px; }
-.rcp { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
-.rcp:last-child { margin-bottom:0; }
-.rcwho { font-size:12px; color:var(--muted); font-weight:300; }
-.rcnums { text-align:right; }
-.rcraw { font-size:14px; font-weight:700; display:block; }
-.rcraw.m { color:var(--mark); }
-.rcraw.a { color:var(--allie); }
-.rccook { font-size:11px; color:var(--dim); display:block; font-style:italic; }
+.rc-head{
+  padding:7px 14px 5px;
+  font-size:9px;text-transform:uppercase;letter-spacing:1.5px;
+  font-weight:700;color:var(--meal-c1,var(--c1));
+}
+.rc-row{
+  padding:5px 14px 6px;
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.rc-who{font-size:11px;color:var(--muted);font-weight:400;}
+.rc-right{text-align:right;}
+.rc-raw{font-size:13px;font-weight:700;display:block;}
+.rc-raw.m{color:var(--mark);}
+.rc-raw.a{color:var(--allie);}
+.rc-cooked{font-size:10px;color:var(--dim);display:block;font-style:italic;}
 
-.div { height:1px; background:var(--border); margin:2px 18px; }
+.sep{height:1px;background:rgba(255,255,255,.05);margin:0 18px;}
 
-.tots { padding:12px 14px 14px; background:var(--card2); border-top:1px solid var(--border); }
-.tots-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:7px; }
-.tbox { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 5px; text-align:center; }
-.tval { font-size:17px; font-weight:700; line-height:1; }
-.tval.m { color:var(--mark); }
-.tval.a { color:var(--allie); }
-.tlbl { font-size:9px; color:var(--dim); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; line-height:1.2; }
+/* totals */
+.totals-bar{
+  padding:14px 16px;
+  background:rgba(255,255,255,.03);
+  border-top:1px solid var(--border);
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;
+}
+.tot{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:12px;padding:10px 6px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.tot::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.tot.mk::before{background:linear-gradient(90deg,var(--mark),transparent);}
+.tot.al::before{background:linear-gradient(90deg,var(--allie),transparent);}
+.tot-val{font-size:16px;font-weight:700;line-height:1;}
+.tot-val.m{color:var(--mark);}
+.tot-val.a{color:var(--allie);}
+.tot-lbl{font-size:9px;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;line-height:1.3;}
 
-.empty { text-align:center; padding:60px 20px; color:var(--muted); max-width:480px; margin:0 auto; }
-.empty span { font-size:52px; display:block; margin-bottom:14px; }
-.empty p { font-size:15px; line-height:1.6; font-weight:300; }
-.fn { text-align:center; padding:10px 0 2px; font-size:11px; color:var(--dim); font-style:italic; max-width:480px; margin:0 auto; }
+/* empty */
+.empty{
+  text-align:center;padding:80px 30px;
+  max-width:480px;margin:0 auto;
+}
+.empty-icon{font-size:64px;display:block;margin-bottom:16px;opacity:.7;}
+.empty h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px;}
+.empty p{font-size:14px;color:var(--muted);font-weight:300;line-height:1.6;}
+
+.fn{text-align:center;padding:10px 0 2px;font-size:10px;color:var(--dim);font-style:italic;max-width:480px;margin:0 auto;letter-spacing:.5px;}
 </style>
 </head>
 <body>
 
+<div class="glow glow1" id="glow1"></div>
+<div class="glow glow2" id="glow2"></div>
+
 <div class="hdr">
-  <h1>🍽️ Dinner Planner</h1>
-  <p id="sub">Mark &amp; Allie — tap a day to see tonight's meal</p>
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <h1>🍽 Dinner Planner</h1>
+      <p id="subline">Mark &amp; Allie</p>
+    </div>
+    <div class="today-badge" id="todayBadge">—</div>
+  </div>
 </div>
 
-<div class="days-wrap"><div class="days" id="dayPills"></div></div>
+<div class="days-outer">
+  <div class="days-row" id="daysRow"></div>
+</div>
 
-<div class="picker-wrap" id="pickerWrap" style="display:none">
-  <div class="picker-label">Choose meal →</div>
-  <div class="picker-pills" id="pickerPills"></div>
+<div class="picker-outer" id="pickerOuter" style="display:none">
+  <div class="picker-scroll">
+    <div class="picker-row" id="pickerRow"></div>
+  </div>
 </div>
 
 <div class="main">
-  <div id="cardArea">
-    <div class="empty"><span>👆</span><p>Tap a day above to see your dinner!</p></div>
+  <div class="card-wrap" id="cardWrap">
+    <div class="empty">
+      <span class="empty-icon">👆</span>
+      <h2>Pick a day</h2>
+      <p>Tap a day above to see what's on the menu tonight.</p>
+    </div>
   </div>
 </div>
 
 <script>
+// ══════════════════════════════════════════════════════
+//  MEAL DATA  (all proteins verified, quantities match spreadsheet)
+// ══════════════════════════════════════════════════════
+const COLOURS = {
+  'Chicken Mince + Rice':['#f97316','#7c2d12'],
+  'Roast Chicken + Air Fry Potatoes + Salad':['#a78bfa','#3b1f6e'],
+  'Roast Chicken + Corn, Beans & Carrot':['#34d399','#064e3b'],
+  'Chicken Stir Fry + Soba Noodles':['#fb923c','#7c2d12'],
+  'Scrambled Eggs + Sourdough':['#fbbf24','#78350f'],
+  'Egg Wrap':['#38bdf8','#0c4a6e'],
+  'Eggs + Smashed Avo':['#4ade80','#14532d'],
+  'Mediterranean Chicken':['#e879f9','#581c87'],
+  'Slow Cook Roast Beef':['#f87171','#7f1d1d'],
+  'Baked Chicken Risotto':['#a3e635','#365314'],
+  'Tortilla Boats':['#fb923c','#431407'],
+};
+
 const M = {
-  'Chicken Mince + Rice': {
-    e:'🍚', tag:'Mon & Fri', mk:490, ak:451, mp:43, ap:41,
-    sub:'Mince + rice + veg — easy weeknight staple',
-    tip:'🕐 Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.',
+  'Chicken Mince + Rice':{
+    e:'🍚',tag:'Mon & Fri',mk:490,ak:451,mp:43,ap:41,
+    sub:'Mince + rice + veg — the trusty weeknight special',
+    tip:{icon:'🕐',text:'Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.'},
     ings:[
       {n:'Chicken mince',rc:true,mr:'180g raw',mc:'~130g cooked',ar:'170g raw',ac:'~110g cooked'},
       {n:'Rice (dry)',rc:true,mr:'50g dry',mc:'~150g cooked',ar:'50g dry',ac:'~150g cooked'},
@@ -165,10 +358,10 @@ const M = {
       {n:'Mushrooms',m:null,a:'40g',ao:true},
     ]
   },
-  'Roast Chicken + Air Fry Potatoes + Salad': {
-    e:'🍗', tag:'Tuesday', mk:542, ak:472, mp:61, ap:56,
-    sub:'Crispy air fry spuds + roast chicken over fresh salad',
-    tip:'🍟 Potatoes: 180°C 12–15 mins → 200°C 6–8 mins. Salt AFTER cooking only!',
+  'Roast Chicken + Air Fry Potatoes + Salad':{
+    e:'🍗',tag:'Tuesday',mk:542,ak:472,mp:61,ap:56,
+    sub:'Crispy spuds + roast chicken over fresh salad',
+    tip:{icon:'🍟',text:'Potatoes: 180°C 12–15 mins → crank to 200°C for 6–8 mins. Salt AFTER cooking!'},
     ings:[
       {n:'Roast chicken (cooked)',m:'180g',a:'165g'},
       {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
@@ -180,10 +373,10 @@ const M = {
       {n:'Beetroot (canned)',m:null,a:'30g',ao:true},
     ]
   },
-  'Roast Chicken + Corn, Beans & Carrot': {
-    e:'🌽', tag:'Saturday', mk:542, ak:462, mp:63, ap:56,
-    sub:'Same roast chicken, heartier veg combo',
-    tip:'🍟 Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.',
+  'Roast Chicken + Corn, Beans & Carrot':{
+    e:'🌽',tag:'Saturday',mk:542,ak:462,mp:63,ap:56,
+    sub:'Same great roast chicken, heartier veg combo',
+    tip:{icon:'🍟',text:'Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.'},
     ings:[
       {n:'Roast chicken (cooked)',m:'180g',a:'160g'},
       {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
@@ -192,10 +385,10 @@ const M = {
       {n:'Carrot',m:'40g',a:'40g'},
     ]
   },
-  'Chicken Stir Fry + Soba Noodles': {
-    e:'🥡', tag:'Wednesday', mk:553, ak:476, mp:55, ap:49,
-    sub:'Weigh noodles dry — they triple in volume when cooked!',
-    tip:'⏱ Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.',
+  'Chicken Stir Fry + Soba Noodles':{
+    e:'🥡',tag:'Wednesday',mk:553,ak:476,mp:55,ap:49,
+    sub:'Weigh noodles dry — they triple in size when cooked!',
+    tip:{icon:'⏱',text:'Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.'},
     ings:[
       {n:'Chicken breast/thigh',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'160g raw',ac:'~98g cooked'},
       {n:'Japanese Soba Noodles',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
@@ -206,10 +399,10 @@ const M = {
       {n:'Olive oil',m:'5ml',a:'5ml'},
     ]
   },
-  'Scrambled Eggs + Sourdough': {
-    e:'🍳', tag:'Thu & Sun', mk:375, ak:375, mp:22, ap:22,
-    sub:'Quick & clean. Optional veg: spinach, mushroom or tomato',
-    tip:'🧈 5g butter per person. Low heat, creamy scramble — pull off heat while still slightly wet!',
+  'Scrambled Eggs + Sourdough':{
+    e:'🍳',tag:'Thu & Sun',mk:375,ak:375,mp:22,ap:22,
+    sub:'Quick, clean, comforting. Optional veg welcome.',
+    tip:{icon:'🧈',text:'5g butter per person. Low heat, creamy scramble — pull off heat while slightly wet!'},
     ings:[
       {n:'Whole eggs',m:'3 eggs (150g)',a:'3 eggs (150g)'},
       {n:'Ploughmans sourdough',m:'1 slice (35g)',a:'1 slice (35g)'},
@@ -217,10 +410,10 @@ const M = {
       {n:'Optional veg (spinach / mushroom / tomato)',m:'to taste',a:'to taste'},
     ]
   },
-  'Egg Wrap': {
-    e:'🌯', tag:'Thu & Sun', mk:522, ak:432, mp:41, ap:31,
-    sub:'Higher volume — two wraps makes it a proper meal',
-    tip:'💡 Warm wraps in dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.',
+  'Egg Wrap':{
+    e:'🌯',tag:'Thu & Sun',mk:522,ak:432,mp:41,ap:31,
+    sub:'Two wraps makes it a proper, filling dinner',
+    tip:{icon:'💡',text:'Warm wraps in a dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.'},
     ings:[
       {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
       {n:'Small wholemeal wraps',m:'2 wraps (80g)',a:'2 wraps (80g)'},
@@ -229,20 +422,20 @@ const M = {
       {n:'Roast chicken (sliced)',m:'~45g cooked',a:'~35g cooked'},
     ]
   },
-  'Eggs + Smashed Avo': {
-    e:'🥑', tag:'Thu & Sun', mk:456, ak:370, mp:27, ap:20,
-    sub:'Weekend vibe — weigh the avo, 40g looks smaller than you think!',
-    tip:'⚖️ Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!',
+  'Eggs + Smashed Avo':{
+    e:'🥑',tag:'Thu & Sun',mk:456,ak:370,mp:27,ap:20,
+    sub:'Weekend brunch vibes for dinner — weigh that avo!',
+    tip:{icon:'⚖️',text:'Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!'},
     ings:[
       {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
       {n:'Smashed avo (AvoFresh)',m:'40g',a:'30g'},
       {n:'Sourdough',m:'2 slices (70g)',a:'2 slices (70g)'},
     ]
   },
-  'Mediterranean Chicken': {
-    e:'🫒', tag:'Swap — slow cook', mk:486, ak:403, mp:45, ap:34,
-    sub:'Chuck it in the morning — done by dinner. Low sodium.',
-    tip:'🐌 Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!',
+  'Mediterranean Chicken':{
+    e:'🫒',tag:'Swap — slow cook',mk:486,ak:403,mp:45,ap:34,
+    sub:'Chuck it in the morning, dinner sorts itself out',
+    tip:{icon:'🐌',text:'Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!'},
     ings:[
       {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
       {n:'Vine tomatoes',m:'200g',a:'200g'},
@@ -255,10 +448,10 @@ const M = {
       {n:'Olive oil',m:'5ml',a:'5ml'},
     ]
   },
-  'Slow Cook Roast Beef': {
-    e:'🥩', tag:'Swap — slow cook', mk:574, ak:460, mp:70, ap:56,
+  'Slow Cook Roast Beef':{
+    e:'🥩',tag:'Swap — slow cook',mk:574,ak:460,mp:70,ap:56,
     sub:'Topside or silverside. Sear it first for proper flavour.',
-    tip:'🔪 Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.',
+    tip:{icon:'🔪',text:'Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.'},
     ings:[
       {n:'Roast beef (topside/silverside)',m:'200g cooked',a:'160g cooked'},
       {n:'Baby potatoes (whole)',m:'200g',a:'160g'},
@@ -272,10 +465,10 @@ const M = {
       {n:'Olive oil (for searing)',m:'5ml',a:'5ml'},
     ]
   },
-  'Baked Chicken Risotto': {
-    e:'🍲', tag:'Swap — oven', mk:657, ak:510, mp:56, ap:42,
-    sub:'Bake covered 180°C 35–40 mins, uncovered last 10 mins',
-    tip:'📍 Weigh arborio rice DRY — it triples in volume when cooked!',
+  'Baked Chicken Risotto':{
+    e:'🍲',tag:'Swap — oven',mk:657,ak:510,mp:56,ap:42,
+    sub:'Bake covered 180°C 35–40 mins, uncovered last 10',
+    tip:{icon:'📍',text:'Weigh arborio rice DRY — it triples in volume. Don\'t skip the parmesan on top!'},
     ings:[
       {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
       {n:'Arborio rice',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
@@ -290,10 +483,10 @@ const M = {
       {n:'Olive oil',m:'5ml',a:'5ml'},
     ]
   },
-  'Tortilla Boats': {
-    e:'🌮', tag:'Swap', mk:495, ak:408, mp:57, ap:47,
-    sub:'Season with paprika, cumin, garlic powder — no added salt needed',
-    tip:'🌮 Toast empty tortillas in a dry pan until crispy. Fill and eat straight away!',
+  'Tortilla Boats':{
+    e:'🌮',tag:'Swap',mk:495,ak:408,mp:57,ap:47,
+    sub:'Season with paprika, cumin, garlic powder — no added salt',
+    tip:{icon:'🌮',text:'Toast empty tortillas in dry pan until crispy. Fill and eat straight away!'},
     ings:[
       {n:'Wholemeal tortillas (24g each)',m:'2 (48g)',a:'2 (48g)'},
       {n:'Chicken breast (cooked, sliced)',m:'150g cooked',a:'120g cooked'},
@@ -306,88 +499,143 @@ const M = {
   },
 };
 
-const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const PLAN = {
-  Monday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Tuesday:   {def:'Roast Chicken + Air Fry Potatoes + Salad',opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Wednesday: {def:'Chicken Stir Fry + Soba Noodles',opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Thursday:  {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Friday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Saturday:  {def:'Roast Chicken + Corn, Beans & Carrot',opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Sunday:    {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const PLAN={
+  Monday:   {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Tuesday:  {def:'Roast Chicken + Air Fry Potatoes + Salad',opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Wednesday:{def:'Chicken Stir Fry + Soba Noodles',opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Thursday: {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Friday:   {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Saturday: {def:'Roast Chicken + Corn, Beans & Carrot',opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Sunday:   {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
 };
 
-const TODAY = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
-let curDay = null, curMeal = null;
+const TODAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+let curDay=null,curMeal=null;
 
-function buildDays() {
-  document.getElementById('dayPills').innerHTML = DAYS.map(d =>
-    `<button class="day${d===TODAY?' today':''}" onclick="pickDay('${d}')">${d.slice(0,3)}${d===TODAY?' ★':''}</button>`
-  ).join('');
+// day number within month
+const todayDate = new Date();
+
+function buildDays(){
+  const row = document.getElementById('daysRow');
+  row.innerHTML = DAYS.map((d,i)=>{
+    const date = new Date(); date.setDate(date.getDate()-(new Date().getDay()==0?6:new Date().getDay()-1)+i);
+    const dn = date.getDate();
+    return `<button class="day-btn${d===TODAY?' today':''}" onclick="pickDay('${d}')">
+      <span class="day-short">${d.slice(0,3)}</span>
+      <span class="day-num">${dn}</span>
+      <span class="day-dot"></span>
+    </button>`;
+  }).join('');
+  document.getElementById('todayBadge').textContent = TODAY;
+  document.getElementById('subline').textContent = 'What\'s for dinner tonight?';
 }
 
-function pickDay(d) {
-  curDay = d; curMeal = PLAN[d].def;
-  document.querySelectorAll('.day').forEach((el,i) => el.classList.toggle('active', DAYS[i]===d));
-  document.querySelectorAll('.day')[DAYS.indexOf(d)].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  document.getElementById('pickerWrap').style.display = 'block';
+function pickDay(d){
+  curDay=d; curMeal=PLAN[d].def;
+  document.querySelectorAll('.day-btn').forEach((el,i)=>el.classList.toggle('active',DAYS[i]===d));
+  document.querySelectorAll('.day-btn')[DAYS.indexOf(d)]?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  document.getElementById('pickerOuter').style.display='block';
   buildPicker(); buildCard();
 }
 
-function buildPicker() {
-  document.getElementById('pickerPills').innerHTML = PLAN[curDay].opts.map(o => {
-    const short = o.length > 26 ? o.split(' ').slice(0,3).join(' ')+'…' : o;
-    return `<button class="mpill${o===curMeal?' active':''}" onclick="pickMeal('${o.replace(/'/g,"\\'")}')"> ${M[o].e} ${short}</button>`;
+function buildPicker(){
+  const opts=PLAN[curDay].opts;
+  document.getElementById('pickerRow').innerHTML=opts.map(o=>{
+    const [c1]=COLOURS[o]||['#fff'];
+    const short=o.length>24?o.split(' ').slice(0,3).join(' ')+'…':o;
+    return `<button class="meal-chip${o===curMeal?' active':''}" onclick="pickMeal('${o.replace(/'/g,"\\'")}')">
+      <span class="meal-chip-dot" style="background:${c1}${o===curMeal?'':'55'}"></span>
+      ${M[o].e} ${short}
+    </button>`;
   }).join('');
 }
 
-function pickMeal(m) { curMeal = m; buildPicker(); buildCard(); }
+function pickMeal(meal){curMeal=meal;buildPicker();buildCard();}
 
-function buildCard() {
-  const m = M[curMeal]; if (!m) return;
-  let ings = '';
-  m.ings.forEach((ing, i) => {
-    if (i > 0) ings += '<div class="div"></div>';
-    if (ing.rc) {
-      ings += `<div class="irow"><div class="iname"><b>${ing.n}</b></div></div>
-        <div class="rcb">
-          <div class="rcb-hd">⚖️ Weigh raw — serve as cooked weight</div>
-          <div class="rcp"><span class="rcwho">💙 Mark</span><div class="rcnums"><span class="rcraw m">${ing.mr}</span><span class="rccook">${ing.mc}</span></div></div>
-          <div class="rcp"><span class="rcwho">💗 Allie</span><div class="rcnums"><span class="rcraw a">${ing.ar}</span><span class="rccook">${ing.ac}</span></div></div>
+function setGlow(c1){
+  document.getElementById('glow1').style.background=`${c1}20`;
+}
+
+function buildCard(){
+  const m=M[curMeal]; if(!m) return;
+  const [c1,c2]=COLOURS[curMeal]||['#f97316','#7c2d12'];
+  setGlow(c1);
+
+  let ings='';
+  m.ings.forEach((ing,i)=>{
+    if(i>0) ings+=`<div class="sep"></div>`;
+    if(ing.rc){
+      ings+=`
+        <div class="ing-row"><div class="ing-name"><strong>${ing.n}</strong></div></div>
+        <div class="rc-wrap" style="--meal-c1:${c1}">
+          <div class="rc-head">⚖ Weigh raw — serve as cooked</div>
+          <div class="rc-row">
+            <span class="rc-who">💙 Mark</span>
+            <div class="rc-right">
+              <span class="rc-raw m">${ing.mr}</span>
+              <span class="rc-cooked">${ing.mc}</span>
+            </div>
+          </div>
+          <div class="rc-row">
+            <span class="rc-who">💗 Allie</span>
+            <div class="rc-right">
+              <span class="rc-raw a">${ing.ar}</span>
+              <span class="rc-cooked">${ing.ac}</span>
+            </div>
+          </div>
         </div>`;
     } else {
-      const tag = ing.mo ? '<br><small style="color:var(--dim);font-size:11px">💙 Mark only</small>'
-                : ing.ao ? '<br><small style="color:var(--dim);font-size:11px">💗 Allie only</small>' : '';
-      const mq = ing.m && !ing.ao ? `<span class="q m">💙 ${ing.m}</span>` : '';
-      const aq = ing.a && !ing.mo ? `<span class="q a">💗 ${ing.a}</span>` : '';
-      ings += `<div class="irow"><div class="iname">${ing.n}${tag}</div><div class="iqty">${mq}${aq}</div></div>`;
+      const tag=ing.mo?`<span class="ing-only">💙 Mark only</span>`
+               :ing.ao?`<span class="ing-only">💗 Allie only</span>`:'';
+      const mq=ing.m&&!ing.ao?`<span class="qty m">💙 ${ing.m}</span>`:'';
+      const aq=ing.a&&!ing.mo?`<span class="qty a">💗 ${ing.a}</span>`:'';
+      ings+=`<div class="ing-row">
+        <div class="ing-name">${ing.n}${tag}</div>
+        <div class="ing-qty">${mq}${aq}</div>
+      </div>`;
     }
   });
 
-  document.getElementById('cardArea').innerHTML = `
-    <div class="card">
-      <div class="chdr">
-        <div class="ctag">🗓 ${m.tag}</div>
-        <div class="ctitle">${m.e} ${curMeal}</div>
-        <div class="csub">${m.sub}</div>
+  document.getElementById('cardWrap').innerHTML=`
+    <div class="hero-card" style="--meal-c1:${c1};--meal-c2:${c2}">
+      <div class="hero-banner">
+        <span class="hero-emoji">${m.e}</span>
+        <div class="hero-tag">🗓 ${m.tag}</div>
+        <div class="hero-title">${curMeal}</div>
+        <div class="hero-sub">${m.sub}</div>
       </div>
-      ${m.tip ? `<div class="cnote"><strong>Tip</strong>${m.tip}</div>` : ''}
-      <div class="sec-hd">Ingredients</div>
-      <div class="ings">${ings}</div>
-      <div class="tots">
-        <div class="tots-grid">
-          <div class="tbox"><div class="tval m">~${m.mk}</div><div class="tlbl">💙 Mark kcal</div></div>
-          <div class="tbox"><div class="tval a">~${m.ak}</div><div class="tlbl">💗 Allie kcal</div></div>
-          <div class="tbox"><div class="tval m">${m.mp}g</div><div class="tlbl">💙 protein</div></div>
-          <div class="tbox"><div class="tval a">${m.ap}g</div><div class="tlbl">💗 protein</div></div>
+      <div class="cook-tip">
+        <span class="tip-icon">${m.tip.icon}</span>
+        <div class="tip-text"><strong>Chef's tip</strong>${m.tip.text}</div>
+      </div>
+      <div class="ing-section">
+        <div class="ing-hd">Ingredients</div>
+        ${ings}
+      </div>
+      <div class="totals-bar">
+        <div class="tot mk">
+          <div class="tot-val m">~${m.mk}</div>
+          <div class="tot-lbl">💙 Mark<br>kcal</div>
+        </div>
+        <div class="tot al">
+          <div class="tot-val a">~${m.ak}</div>
+          <div class="tot-lbl">💗 Allie<br>kcal</div>
+        </div>
+        <div class="tot mk">
+          <div class="tot-val m">${m.mp}g</div>
+          <div class="tot-lbl">💙 Mark<br>protein</div>
+        </div>
+        <div class="tot al">
+          <div class="tot-val a">${m.ap}g</div>
+          <div class="tot-lbl">💗 Allie<br>protein</div>
         </div>
       </div>
     </div>
-    <div class="fn">Quantities match the spreadsheet</div>`;
+    <div class="fn">Quantities match your spreadsheet ✦ Z</div>`;
 }
 
 buildDays();
-document.getElementById('sub').textContent = 'Today is ' + TODAY + ' — tap a day to see your meal';
 pickDay(TODAY);
 </script>
 </body>
