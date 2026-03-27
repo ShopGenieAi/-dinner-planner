@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Dinner — Mark & Allie</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0f1117;
+  --card:    #181c26;
+  --card2:   #1e2233;
+  --border:  #2a3050;
+  --accent:  #5b8fff;
+  --orange:  #ff8c5b;
+  --green:   #4ade80;
+  --mark:    #93c5fd;
+  --allie:   #f9a8d4;
+  --text:    #e8ecf4;
+  --muted:   #8b92a8;
+  --dim:     #4a5270;
+  --safe-t:  env(safe-area-inset-top, 0px);
+  --safe-b:  env(safe-area-inset-bottom, 20px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100svh; overflow-x:hidden; }
+
+.hdr {
+  padding: calc(var(--safe-t) + 16px) 18px 12px;
+  background: linear-gradient(180deg,#0f1117 70%,transparent);
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.hdr h1 { font-family:'DM Serif Display',serif; font-size:20px; letter-spacing:-.3px; }
+.hdr p  { font-size:11px; color:var(--muted); margin-top:2px; font-weight:300; }
+
+.days-wrap { overflow-x:auto; scrollbar-width:none; padding:12px 16px 8px; }
+.days-wrap::-webkit-scrollbar { display:none; }
+.days { display:flex; gap:7px; min-width:max-content; }
+.day {
+  padding:7px 14px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--card);
+  color:var(--muted); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .18s; white-space:nowrap;
+  font-family:'DM Sans',sans-serif;
+}
+.day:active { transform:scale(.95); }
+.day.today  { border-color:rgba(255,140,91,.5); color:var(--orange); }
+.day.active { border-color:var(--accent); background:rgba(91,143,255,.15); color:var(--accent); }
+.day.today.active { border-color:var(--orange); background:rgba(255,140,91,.15); color:var(--orange); }
+
+.picker-wrap { padding:4px 16px 10px; }
+.picker-label { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); margin-bottom:6px; font-weight:700; }
+.picker-pills { display:flex; gap:6px; flex-wrap:wrap; }
+.mpill {
+  padding:6px 11px; border-radius:8px;
+  border:1.5px solid var(--border); background:var(--card);
+  color:var(--muted); font-size:12px; font-weight:500;
+  cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif;
+}
+.mpill:active { transform:scale(.95); }
+.mpill.active { border-color:var(--green); background:rgba(74,222,128,.1); color:var(--green); }
+
+.main { padding:0 14px calc(var(--safe-b) + 16px); }
+.card { background:var(--card); border-radius:18px; border:1px solid var(--border); overflow:hidden; animation:up .25s ease; max-width:480px; margin:0 auto; }
+@keyframes up { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.chdr {
+  padding:16px 18px 12px;
+  background:linear-gradient(135deg,var(--card2) 0%,var(--card) 100%);
+  border-bottom:1px solid var(--border);
+}
+.ctag {
+  display:inline-flex; align-items:center;
+  padding:3px 9px; border-radius:100px; margin-bottom:8px;
+  background:rgba(91,143,255,.12); border:1px solid rgba(91,143,255,.25);
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent);
+}
+.ctitle { font-family:'DM Serif Display',serif; font-size:22px; line-height:1.15; letter-spacing:-.3px; }
+.csub   { font-size:12px; color:var(--muted); margin-top:4px; font-weight:300; font-style:italic; line-height:1.4; }
+
+.cnote {
+  margin:10px 14px 2px; padding:9px 13px; border-radius:10px;
+  background:rgba(255,140,91,.07); border:1px solid rgba(255,140,91,.2);
+  font-size:12px; color:#ffb380; line-height:1.5;
+}
+.cnote strong { display:block; font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); margin-bottom:2px; }
+
+.sec-hd { padding:8px 18px 2px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--dim); font-weight:700; }
+.ings { padding:4px 0 2px; }
+.irow { padding:9px 18px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.irow:active { background:rgba(255,255,255,.03); }
+.iname { flex:1; font-size:14px; color:var(--text); line-height:1.35; font-weight:300; }
+.iname b { font-weight:700; }
+.iqty { text-align:right; flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
+.q { font-size:14px; font-weight:700; white-space:nowrap; }
+.q.m { color:var(--mark); }
+.q.a { color:var(--allie); }
+
+.rcb {
+  margin:2px 12px 5px 14px; padding:9px 13px;
+  border-radius:0 11px 11px 0; border-left:3px solid var(--orange);
+  background:rgba(255,140,91,.05);
+}
+.rcb-hd { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--orange); font-weight:700; margin-bottom:7px; }
+.rcp { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
+.rcp:last-child { margin-bottom:0; }
+.rcwho { font-size:12px; color:var(--muted); font-weight:300; }
+.rcnums { text-align:right; }
+.rcraw { font-size:14px; font-weight:700; display:block; }
+.rcraw.m { color:var(--mark); }
+.rcraw.a { color:var(--allie); }
+.rccook { font-size:11px; color:var(--dim); display:block; font-style:italic; }
+
+.div { height:1px; background:var(--border); margin:2px 18px; }
+
+.tots { padding:12px 14px 14px; background:var(--card2); border-top:1px solid var(--border); }
+.tots-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:7px; }
+.tbox { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 5px; text-align:center; }
+.tval { font-size:17px; font-weight:700; line-height:1; }
+.tval.m { color:var(--mark); }
+.tval.a { color:var(--allie); }
+.tlbl { font-size:9px; color:var(--dim); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; line-height:1.2; }
+
+.empty { text-align:center; padding:60px 20px; color:var(--muted); max-width:480px; margin:0 auto; }
+.empty span { font-size:52px; display:block; margin-bottom:14px; }
+.empty p { font-size:15px; line-height:1.6; font-weight:300; }
+.fn { text-align:center; padding:10px 0 2px; font-size:11px; color:var(--dim); font-style:italic; max-width:480px; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>🍽️ Dinner Planner</h1>
+  <p id="sub">Mark &amp; Allie — tap a day to see tonight's meal</p>
+</div>
+
+<div class="days-wrap"><div class="days" id="dayPills"></div></div>
+
+<div class="picker-wrap" id="pickerWrap" style="display:none">
+  <div class="picker-label">Choose meal →</div>
+  <div class="picker-pills" id="pickerPills"></div>
+</div>
+
+<div class="main">
+  <div id="cardArea">
+    <div class="empty"><span>👆</span><p>Tap a day above to see your dinner!</p></div>
+  </div>
+</div>
+
+<script>
+const M = {
+  'Chicken Mince + Rice': {
+    e:'🍚', tag:'Mon & Fri', mk:490, ak:451, mp:43, ap:41,
+    sub:'Mince + rice + veg — easy weeknight staple',
+    tip:'🕐 Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.',
+    ings:[
+      {n:'Chicken mince',rc:true,mr:'180g raw',mc:'~130g cooked',ar:'170g raw',ac:'~110g cooked'},
+      {n:'Rice (dry)',rc:true,mr:'50g dry',mc:'~150g cooked',ar:'50g dry',ac:'~150g cooked'},
+      {n:'Tinned flavoured tomatoes',m:'200g',a:'200g'},
+      {n:'Green beans',m:'40g',a:'40g'},
+      {n:'Carrot',m:'30g',a:'30g'},
+      {n:'Red onion',m:'15g',a:'15g'},
+      {n:'Mushrooms',m:null,a:'40g',ao:true},
+    ]
+  },
+  'Roast Chicken + Air Fry Potatoes + Salad': {
+    e:'🍗', tag:'Tuesday', mk:542, ak:472, mp:61, ap:56,
+    sub:'Crispy air fry spuds + roast chicken over fresh salad',
+    tip:'🍟 Potatoes: 180°C 12–15 mins → 200°C 6–8 mins. Salt AFTER cooking only!',
+    ings:[
+      {n:'Roast chicken (cooked)',m:'180g',a:'165g'},
+      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
+      {n:'Olive oil (for potatoes)',m:'5ml',a:'5ml'},
+      {n:'Tomato',m:'30g',a:'30g'},
+      {n:'Carrot',m:'25g',a:'25g'},
+      {n:'Capsicum',m:'25g',a:'25g'},
+      {n:'Gherkin',m:'20g',a:null,mo:true},
+      {n:'Beetroot (canned)',m:null,a:'30g',ao:true},
+    ]
+  },
+  'Roast Chicken + Corn, Beans & Carrot': {
+    e:'🌽', tag:'Saturday', mk:542, ak:462, mp:63, ap:56,
+    sub:'Same roast chicken, heartier veg combo',
+    tip:'🍟 Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.',
+    ings:[
+      {n:'Roast chicken (cooked)',m:'180g',a:'160g'},
+      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
+      {n:'Corn kernels (no added salt)',m:'70g',a:'70g'},
+      {n:'Green beans',m:'50g',a:'50g'},
+      {n:'Carrot',m:'40g',a:'40g'},
+    ]
+  },
+  'Chicken Stir Fry + Soba Noodles': {
+    e:'🥡', tag:'Wednesday', mk:553, ak:476, mp:55, ap:49,
+    sub:'Weigh noodles dry — they triple in volume when cooked!',
+    tip:'⏱ Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.',
+    ings:[
+      {n:'Chicken breast/thigh',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'160g raw',ac:'~98g cooked'},
+      {n:'Japanese Soba Noodles',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
+      {n:'Broccoli',m:'50g',a:'40g'},
+      {n:'Capsicum',m:'50g',a:'50g'},
+      {n:'Corn kernels',m:'40g',a:'40g'},
+      {n:'Red onion',m:'15g',a:'15g'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Scrambled Eggs + Sourdough': {
+    e:'🍳', tag:'Thu & Sun', mk:375, ak:375, mp:22, ap:22,
+    sub:'Quick & clean. Optional veg: spinach, mushroom or tomato',
+    tip:'🧈 5g butter per person. Low heat, creamy scramble — pull off heat while still slightly wet!',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'3 eggs (150g)'},
+      {n:'Ploughmans sourdough',m:'1 slice (35g)',a:'1 slice (35g)'},
+      {n:'Butter',m:'5g',a:'5g'},
+      {n:'Optional veg (spinach / mushroom / tomato)',m:'to taste',a:'to taste'},
+    ]
+  },
+  'Egg Wrap': {
+    e:'🌯', tag:'Thu & Sun', mk:522, ak:432, mp:41, ap:31,
+    sub:'Higher volume — two wraps makes it a proper meal',
+    tip:'💡 Warm wraps in dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
+      {n:'Small wholemeal wraps',m:'2 wraps (80g)',a:'2 wraps (80g)'},
+      {n:'Fresh spinach',m:'20g',a:'20g'},
+      {n:'Capsicum',m:'30g',a:'30g'},
+      {n:'Roast chicken (sliced)',m:'~45g cooked',a:'~35g cooked'},
+    ]
+  },
+  'Eggs + Smashed Avo': {
+    e:'🥑', tag:'Thu & Sun', mk:456, ak:370, mp:27, ap:20,
+    sub:'Weekend vibe — weigh the avo, 40g looks smaller than you think!',
+    tip:'⚖️ Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!',
+    ings:[
+      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
+      {n:'Smashed avo (AvoFresh)',m:'40g',a:'30g'},
+      {n:'Sourdough',m:'2 slices (70g)',a:'2 slices (70g)'},
+    ]
+  },
+  'Mediterranean Chicken': {
+    e:'🫒', tag:'Swap — slow cook', mk:486, ak:403, mp:45, ap:34,
+    sub:'Chuck it in the morning — done by dinner. Low sodium.',
+    tip:'🐌 Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!',
+    ings:[
+      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
+      {n:'Vine tomatoes',m:'200g',a:'200g'},
+      {n:'Baby potatoes (whole)',m:'150g',a:'120g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Olives (low sodium)',m:'15g',a:'15g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'Low sodium chicken stock',m:'100ml',a:'100ml'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Slow Cook Roast Beef': {
+    e:'🥩', tag:'Swap — slow cook', mk:574, ak:460, mp:70, ap:56,
+    sub:'Topside or silverside. Sear it first for proper flavour.',
+    tip:'🔪 Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.',
+    ings:[
+      {n:'Roast beef (topside/silverside)',m:'200g cooked',a:'160g cooked'},
+      {n:'Baby potatoes (whole)',m:'200g',a:'160g'},
+      {n:'Carrot',m:'100g',a:'80g'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'No-added-salt beef stock',m:'150ml',a:'150ml'},
+      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
+      {n:'Low sodium Worcestershire',m:'5ml',a:'5ml'},
+      {n:'Olive oil (for searing)',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Baked Chicken Risotto': {
+    e:'🍲', tag:'Swap — oven', mk:657, ak:510, mp:56, ap:42,
+    sub:'Bake covered 180°C 35–40 mins, uncovered last 10 mins',
+    tip:'📍 Weigh arborio rice DRY — it triples in volume when cooked!',
+    ings:[
+      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
+      {n:'Arborio rice',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
+      {n:'Capsicum',m:'75g',a:'75g'},
+      {n:'Corn kernels (no added salt)',m:'40g',a:'30g'},
+      {n:'Broccoli',m:'50g',a:'40g'},
+      {n:'Onion',m:'40g',a:'40g'},
+      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
+      {n:'No-added-salt chicken stock',m:'200ml',a:'200ml'},
+      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
+      {n:'Parmesan (topping)',m:'10g',a:'10g'},
+      {n:'Olive oil',m:'5ml',a:'5ml'},
+    ]
+  },
+  'Tortilla Boats': {
+    e:'🌮', tag:'Swap', mk:495, ak:408, mp:57, ap:47,
+    sub:'Season with paprika, cumin, garlic powder — no added salt needed',
+    tip:'🌮 Toast empty tortillas in a dry pan until crispy. Fill and eat straight away!',
+    ings:[
+      {n:'Wholemeal tortillas (24g each)',m:'2 (48g)',a:'2 (48g)'},
+      {n:'Chicken breast (cooked, sliced)',m:'150g cooked',a:'120g cooked'},
+      {n:'Reduced fat cheese (grated)',m:'20g',a:'15g'},
+      {n:'Capsicum (sliced)',m:'40g',a:'40g'},
+      {n:'Spinach',m:'20g',a:'20g'},
+      {n:'Tomato (diced)',m:'30g',a:'30g'},
+      {n:'Greek yoghurt (topping)',m:'30g',a:'30g'},
+    ]
+  },
+};
+
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const PLAN = {
+  Monday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Tuesday:   {def:'Roast Chicken + Air Fry Potatoes + Salad',opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Wednesday: {def:'Chicken Stir Fry + Soba Noodles',opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Thursday:  {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Friday:    {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Saturday:  {def:'Roast Chicken + Corn, Beans & Carrot',opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Sunday:    {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+};
+
+const TODAY = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+let curDay = null, curMeal = null;
+
+function buildDays() {
+  document.getElementById('dayPills').innerHTML = DAYS.map(d =>
+    `<button class="day${d===TODAY?' today':''}" onclick="pickDay('${d}')">${d.slice(0,3)}${d===TODAY?' ★':''}</button>`
+  ).join('');
+}
+
+function pickDay(d) {
+  curDay = d; curMeal = PLAN[d].def;
+  document.querySelectorAll('.day').forEach((el,i) => el.classList.toggle('active', DAYS[i]===d));
+  document.querySelectorAll('.day')[DAYS.indexOf(d)].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  document.getElementById('pickerWrap').style.display = 'block';
+  buildPicker(); buildCard();
+}
+
+function buildPicker() {
+  document.getElementById('pickerPills').innerHTML = PLAN[curDay].opts.map(o => {
+    const short = o.length > 26 ? o.split(' ').slice(0,3).join(' ')+'…' : o;
+    return `<button class="mpill${o===curMeal?' active':''}" onclick="pickMeal('${o.replace(/'/g,"\\'")}')"> ${M[o].e} ${short}</button>`;
+  }).join('');
+}
+
+function pickMeal(m) { curMeal = m; buildPicker(); buildCard(); }
+
+function buildCard() {
+  const m = M[curMeal]; if (!m) return;
+  let ings = '';
+  m.ings.forEach((ing, i) => {
+    if (i > 0) ings += '<div class="div"></div>';
+    if (ing.rc) {
+      ings += `<div class="irow"><div class="iname"><b>${ing.n}</b></div></div>
+        <div class="rcb">
+          <div class="rcb-hd">⚖️ Weigh raw — serve as cooked weight</div>
+          <div class="rcp"><span class="rcwho">💙 Mark</span><div class="rcnums"><span class="rcraw m">${ing.mr}</span><span class="rccook">${ing.mc}</span></div></div>
+          <div class="rcp"><span class="rcwho">💗 Allie</span><div class="rcnums"><span class="rcraw a">${ing.ar}</span><span class="rccook">${ing.ac}</span></div></div>
+        </div>`;
+    } else {
+      const tag = ing.mo ? '<br><small style="color:var(--dim);font-size:11px">💙 Mark only</small>'
+                : ing.ao ? '<br><small style="color:var(--dim);font-size:11px">💗 Allie only</small>' : '';
+      const mq = ing.m && !ing.ao ? `<span class="q m">💙 ${ing.m}</span>` : '';
+      const aq = ing.a && !ing.mo ? `<span class="q a">💗 ${ing.a}</span>` : '';
+      ings += `<div class="irow"><div class="iname">${ing.n}${tag}</div><div class="iqty">${mq}${aq}</div></div>`;
+    }
+  });
+
+  document.getElementById('cardArea').innerHTML = `
+    <div class="card">
+      <div class="chdr">
+        <div class="ctag">🗓 ${m.tag}</div>
+        <div class="ctitle">${m.e} ${curMeal}</div>
+        <div class="csub">${m.sub}</div>
+      </div>
+      ${m.tip ? `<div class="cnote"><strong>Tip</strong>${m.tip}</div>` : ''}
+      <div class="sec-hd">Ingredients</div>
+      <div class="ings">${ings}</div>
+      <div class="tots">
+        <div class="tots-grid">
+          <div class="tbox"><div class="tval m">~${m.mk}</div><div class="tlbl">💙 Mark kcal</div></div>
+          <div class="tbox"><div class="tval a">~${m.ak}</div><div class="tlbl">💗 Allie kcal</div></div>
+          <div class="tbox"><div class="tval m">${m.mp}g</div><div class="tlbl">💙 protein</div></div>
+          <div class="tbox"><div class="tval a">${m.ap}g</div><div class="tlbl">💗 protein</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="fn">Quantities match the spreadsheet</div>`;
+}
+
+buildDays();
+document.getElementById('sub').textContent = 'Today is ' + TODAY + ' — tap a day to see your meal';
+pickDay(TODAY);
+</script>
+</body>
+</html>
