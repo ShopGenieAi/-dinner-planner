@@ -4,298 +4,247 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Dinner — Mark & Allie</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #f5f5f7;
-  --glass:    rgba(0,0,0,0.04);
-  --glass2:   rgba(0,0,0,0.07);
-  --border:   rgba(0,0,0,0.09);
-  --border2:  rgba(0,0,0,0.14);
-  --text:     #1a1a2e;
-  --muted:    rgba(26,26,46,0.5);
-  --dim:      rgba(26,26,46,0.35);
-  --mark:     #60a5fa;
-  --allie:    #f472b6;
-  --safe-t:   env(safe-area-inset-top,0px);
-  --safe-b:   env(safe-area-inset-bottom,20px);
-  /* meal colour palettes */
-  --c1: #f97316; --c1b: #7c2d12;
-  --c2: #a78bfa; --c2b: #3b1f6e;
-  --c3: #34d399; --c3b: #064e3b;
-  --c4: #fb923c; --c4b: #7c2d12;
-  --c5: #fbbf24; --c5b: #78350f;
-  --c6: #38bdf8; --c6b: #0c4a6e;
-  --c7: #f87171; --c7b: #7f1d1d;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{
-  font-family:'Outfit',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100svh;
-  overflow-x:hidden;
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --border: rgba(0,0,0,0.09);
+  --border2: rgba(0,0,0,0.14);
+  --text: #111827;
+  --muted: #6b7280;
+  --dim: #9ca3af;
+  --mark: #3b82f6;
+  --allie: #ec4899;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 20px);
 }
 
-/* ── GRAIN OVERLAY ── */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;opacity:.25;
-}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
 
-/* ── AMBIENT GLOW ── */
-.glow{
-  position:fixed;
-  border-radius:50%;
-  filter:blur(80px);
-  pointer-events:none;
-  z-index:0;
-  transition:all 1.2s ease;
-}
-.glow1{width:400px;height:400px;top:-100px;right:-100px;background:rgba(249,115,22,0.07);}
-.glow2{width:300px;height:300px;bottom:100px;left:-80px;background:rgba(167,139,250,0.06);}
-
-/* ── HEADER ── */
-.hdr{
-  position:sticky;top:0;z-index:200;
-  padding:calc(var(--safe-t) + 14px) 20px 12px;
-  background:rgba(245,245,247,0.92);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+/* ─── HEADER ─── */
+.hdr {
+  position:sticky; top:0; z-index:200;
+  padding:calc(var(--safe-t) + 14px) 18px 12px;
+  background:rgba(240,242,245,0.94);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
-.hdr-inner{display:flex;align-items:center;justify-content:space-between;}
-.hdr-left h1{
-  font-family:'Playfair Display',serif;
-  font-size:22px;letter-spacing:-.3px;
-  background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.6) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.hdr-left p{font-size:11px;color:var(--muted);margin-top:1px;font-weight:300;}
-.today-badge{
-  padding:5px 12px;border-radius:100px;
-  background:var(--glass2);border:1px solid var(--border2);
-  font-size:11px;font-weight:600;color:var(--text);
-  white-space:nowrap;
+.hdr-inner { display:flex; align-items:center; justify-content:space-between; }
+.hdr-left h1 { font-family:'Playfair Display',serif; font-size:21px; color:var(--text); letter-spacing:-.3px; }
+.hdr-left p  { font-size:11px; color:var(--muted); margin-top:1px; font-weight:400; }
+.today-badge {
+  padding:5px 12px; border-radius:100px;
+  background:var(--white); border:1px solid var(--border2);
+  font-size:11px; font-weight:700; color:var(--text);
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
 }
 
-/* ── DAY STRIP ── */
-.days-outer{overflow-x:auto;scrollbar-width:none;padding:14px 16px 10px;}
-.days-outer::-webkit-scrollbar{display:none;}
-.days-row{display:flex;gap:8px;min-width:max-content;}
+/* ─── DAY STRIP ─── */
+.days-outer { overflow-x:auto; scrollbar-width:none; padding:12px 16px 8px; }
+.days-outer::-webkit-scrollbar { display:none; }
+.days-row { display:flex; gap:8px; min-width:max-content; }
 
-.day-btn{
-  display:flex;flex-direction:column;align-items:center;
-  padding:10px 14px;border-radius:16px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  cursor:pointer;transition:all .2s;
+.day-btn {
+  display:flex; flex-direction:column; align-items:center;
+  padding:9px 13px; border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  cursor:pointer; transition:all .18s;
   font-family:'Outfit',sans-serif;
-  position:relative;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
-.day-btn::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 100%);
-  opacity:0;transition:opacity .2s;
-}
-.day-btn:active{transform:scale(.94);}
-.day-btn.active::before{opacity:1;}
-.day-short{font-size:12px;font-weight:700;color:#666;letter-spacing:.5px;text-transform:uppercase;}
-.day-num{font-size:10px;font-weight:500;color:#aaa;margin-top:2px;}
-.day-dot{width:4px;height:4px;border-radius:50%;margin-top:4px;background:transparent;transition:background .2s;}
-.day-btn.today .day-short{color:var(--text);}
-.day-btn.today .day-dot{background:var(--c1);}
-.day-btn.active .day-short{color:#fff;}
-.day-btn.active{border-color:rgba(0,0,0,.2);background:var(--glass2);}
-.day-btn.active .day-dot{background:#fff;}
+.day-btn:active { transform:scale(.94); }
+.day-short { font-size:12px; font-weight:700; color:#888; letter-spacing:.5px; text-transform:uppercase; }
+.day-num   { font-size:10px; font-weight:500; color:#bbb; margin-top:2px; }
+.day-dot   { width:4px; height:4px; border-radius:50%; margin-top:4px; background:transparent; transition:all .2s; }
+.day-btn.today .day-short { color:var(--text); }
+.day-btn.today .day-dot   { background:#f97316; }
+.day-btn.active { border-color:var(--text); background:var(--text); }
+.day-btn.active .day-short { color:#fff; }
+.day-btn.active .day-num   { color:rgba(255,255,255,.5); }
+.day-btn.active .day-dot   { background:rgba(255,255,255,.6); }
 
-/* ── MEAL PICKER ── */
-.picker-outer{padding:2px 16px 12px;}
-.picker-scroll{overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
-.picker-scroll::-webkit-scrollbar{display:none;}
-.picker-row{display:flex;gap:7px;min-width:max-content;}
+/* ─── MEAL PICKER ─── */
+.picker-outer { padding:2px 16px 10px; }
+.picker-scroll { overflow-x:auto; scrollbar-width:none; }
+.picker-scroll::-webkit-scrollbar { display:none; }
+.picker-row { display:flex; gap:7px; min-width:max-content; padding-bottom:2px; }
 
-.meal-chip{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 13px;border-radius:100px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  cursor:pointer;transition:all .2s;
+.meal-chip {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 13px; border-radius:100px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  cursor:pointer; transition:all .18s;
   font-family:'Outfit',sans-serif;
-  font-size:12px;font-weight:600;color:#555;
+  font-size:12px; font-weight:600; color:#555;
   white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
-.meal-chip:active{transform:scale(.95);}
-.meal-chip.active{
-  border-color:rgba(0,0,0,.25);
-  background:var(--glass2);
-  color:#111;
-}
-.meal-chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.meal-chip:active { transform:scale(.95); }
+.meal-chip.active { border-color:var(--text); background:var(--text); color:#fff; }
+.meal-chip-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 
-/* ── HERO CARD ── */
-.main{padding:0 14px calc(var(--safe-b) + 20px);position:relative;z-index:1;}
-.card-wrap{max-width:480px;margin:0 auto;}
+/* ─── MAIN ─── */
+.main { padding:0 14px calc(var(--safe-b) + 20px); }
+.card-wrap { max-width:480px; margin:0 auto; }
 
-.hero-card{
-  border-radius:24px;
-  overflow:hidden;
+/* ─── HERO CARD ─── */
+.hero-card {
+  border-radius:22px; overflow:hidden;
   border:1px solid var(--border2);
-  animation:cardIn .35s cubic-bezier(.2,0,.2,1);
+  background:var(--white);
+  box-shadow:0 4px 24px rgba(0,0,0,.10);
+  animation:cardIn .3s cubic-bezier(.2,0,.2,1);
+}
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(16px) scale(.98); }
+  to   { opacity:1; transform:translateY(0)    scale(1); }
+}
+
+/* ─── MEAL IMAGE BANNER ─── */
+.meal-img-wrap {
+  position:relative; height:180px; overflow:hidden;
+  background:linear-gradient(135deg,#e5e7eb,#d1d5db);
+}
+.meal-img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform .4s ease;
+}
+.meal-img-wrap:active .meal-img { transform:scale(1.03); }
+.meal-img-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 30%, rgba(0,0,0,.65) 100%);
+}
+.meal-img-content {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:14px 18px;
+}
+.meal-tag {
+  display:inline-flex; align-items:center;
+  padding:3px 10px; border-radius:100px; margin-bottom:7px;
+  background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);
+  font-size:10px; font-weight:700; letter-spacing:1px;
+  text-transform:uppercase; color:rgba(255,255,255,.9);
+  backdrop-filter:blur(8px);
+}
+.meal-title {
+  font-family:'Playfair Display',serif;
+  font-size:22px; line-height:1.15; color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+.meal-sub {
+  font-size:12px; color:rgba(255,255,255,.7);
+  margin-top:3px; font-weight:300; font-style:italic;
+}
+
+/* ─── CHEF'S TIP ─── */
+.cook-tip {
+  padding:13px 18px;
+  background:#fffbf0;
+  border-bottom:1px solid #fde68a;
+  display:flex; align-items:flex-start; gap:10px;
+}
+.tip-icon { font-size:20px; flex-shrink:0; margin-top:0; }
+.tip-label { font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:800; color:#92400e; margin-bottom:3px; }
+.tip-body  { font-size:13px; color:#78350f; font-weight:600; line-height:1.5; }
+
+/* ─── INGREDIENTS ─── */
+.ing-section { background:var(--white); }
+.ing-hd {
+  padding:12px 18px 6px;
+  font-size:11px; text-transform:uppercase; letter-spacing:2px;
+  color:#374151; font-weight:800; border-bottom:1px solid var(--border);
+}
+.ing-row {
+  padding:10px 18px;
+  display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+}
+.ing-name { flex:1; font-size:14px; color:#1f2937; line-height:1.35; font-weight:600; }
+.ing-name strong { font-weight:800; }
+.ing-only { display:block; font-size:10px; color:#9ca3af; margin-top:1px; font-weight:500; }
+.ing-qty  { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+.qty { font-size:14px; font-weight:700; white-space:nowrap; }
+.qty.m { color:var(--mark); }
+.qty.a { color:var(--allie); }
+
+/* ─── RAW/COOKED BLOCK ─── */
+.rc-wrap {
+  margin:2px 14px 8px 16px;
+  border-radius:0 12px 12px 0;
+  border-left:3px solid var(--rc-color, #f97316);
+  background:#fafafa;
+  overflow:hidden;
+}
+.rc-head {
+  padding:6px 14px 5px;
+  font-size:10px; text-transform:uppercase; letter-spacing:1px;
+  font-weight:800; color:var(--rc-color, #f97316);
+}
+.rc-row {
+  padding:6px 14px 7px;
+  display:flex; justify-content:space-between; align-items:center;
+  border-top:1px solid rgba(0,0,0,.05);
+}
+.rc-who  { font-size:12px; color:#555; font-weight:600; }
+.rc-right { text-align:right; }
+.rc-raw  { font-size:13px; font-weight:800; display:block; }
+.rc-raw.m { color:var(--mark); }
+.rc-raw.a { color:var(--allie); }
+.rc-cooked { font-size:12px; color:#555; display:block; font-weight:700; }
+
+.sep { height:1px; background:#f3f4f6; margin:0 18px; }
+
+/* ─── TOTALS — rock solid table layout ─── */
+.totals-bar {
+  padding:14px 14px 16px;
+  background:#f9fafb;
+  border-top:2px solid var(--border);
+}
+.totals-title {
+  font-size:10px; text-transform:uppercase; letter-spacing:1.5px;
+  font-weight:800; color:#6b7280; margin-bottom:10px; padding:0 2px;
+}
+.totals-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:8px;
+  width:100%;
+}
+.tot {
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:10px 6px 8px;
+  text-align:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  overflow:hidden;
   position:relative;
 }
-@keyframes cardIn{
-  from{opacity:0;transform:translateY(20px) scale(.98)}
-  to{opacity:1;transform:translateY(0) scale(1)}
+.tot-stripe {
+  position:absolute; top:0; left:0; right:0; height:3px;
 }
+.tot.mk .tot-stripe { background:linear-gradient(90deg,var(--mark),rgba(59,130,246,.2)); }
+.tot.al .tot-stripe { background:linear-gradient(90deg,var(--allie),rgba(236,72,153,.2)); }
+.tot-val { font-size:16px; font-weight:800; line-height:1; margin-top:2px; }
+.tot-val.m { color:var(--mark); }
+.tot-val.a { color:var(--allie); }
+.tot-lbl { font-size:9px; color:#6b7280; margin-top:4px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; line-height:1.3; }
 
-/* dynamic colour hero */
-.hero-banner{
-  padding:22px 22px 18px;
-  position:relative;overflow:hidden;
-  min-height:130px;
-  display:flex;flex-direction:column;justify-content:flex-end;
-}
-.hero-banner::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--meal-c1) 0%,var(--meal-c2) 100%);
-  opacity:.18;
-}
-.hero-banner::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 0%,rgba(8,10,15,.9) 100%);
-}
-.hero-emoji{
-  position:absolute;top:16px;right:18px;
-  font-size:56px;opacity:.35;
-  filter:drop-shadow(0 0 20px var(--meal-c1));
-  z-index:1;
-}
-.hero-tag{
-  position:relative;z-index:2;
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:100px;
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.18);
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  text-transform:uppercase;color:rgba(255,255,255,.8);
-  margin-bottom:8px;width:fit-content;
-}
-.hero-title{
-  font-family:'Playfair Display',serif;
-  font-size:24px;line-height:1.15;
-  position:relative;z-index:2;
-  text-shadow:0 2px 20px rgba(0,0,0,.5);
-}
-.hero-sub{
-  font-size:12px;color:rgba(255,255,255,.55);
-  margin-top:4px;font-weight:300;font-style:italic;
-  position:relative;z-index:2;line-height:1.4;
-}
+/* ─── EMPTY STATE ─── */
+.empty { text-align:center; padding:70px 30px; max-width:480px; margin:0 auto; }
+.empty-icon { font-size:60px; display:block; margin-bottom:16px; }
+.empty h2 { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:8px; }
+.empty p  { font-size:14px; color:var(--muted); font-weight:400; line-height:1.6; }
 
-/* cook tip */
-.cook-tip{
-  margin:0;padding:12px 18px;
-  background:rgba(0,0,0,.03);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;gap:10px;
-}
-.tip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
-.tip-text{font-size:13px;color:#333;line-height:1.5;font-weight:500;}
-.tip-text strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:2px;font-weight:700;}
-
-/* ingredients */
-.ing-section{background:#ffffff;}
-.ing-hd{
-  padding:12px 18px 4px;
-  font-size:11px;text-transform:uppercase;letter-spacing:2px;
-  color:#444;font-weight:800;
-}
-
-.ing-row{
-  padding:10px 18px;
-  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
-}
-.ing-row:active{background:rgba(255,255,255,.03);}
-.ing-name{flex:1;font-size:14px;color:#222;line-height:1.35;font-weight:600;}
-.ing-name strong{font-weight:600;color:var(--text);}
-.ing-only{display:block;font-size:10px;color:#888;margin-top:2px;}
-.ing-qty{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
-.qty{font-size:13px;font-weight:700;white-space:nowrap;}
-.qty.m{color:var(--mark);}
-.qty.a{color:var(--allie);}
-
-/* raw/cooked */
-.rc-wrap{
-  margin:2px 14px 6px 16px;
-  border-radius:0 14px 14px 0;
-  border-left:2px solid var(--meal-c1,var(--c1));
-  background:rgba(0,0,0,.03);
-  overflow:hidden;
-.rc-head{
-  padding:7px 14px 5px;
-  font-size:9px;text-transform:uppercase;letter-spacing:1.5px;
-  font-weight:700;color:var(--meal-c1,var(--c1));
-}
-.rc-row{
-  padding:5px 14px 6px;
-  display:flex;justify-content:space-between;align-items:baseline;
-  border-top:1px solid rgba(0,0,0,.06);
-}
-.rc-who{font-size:12px;color:#444;font-weight:600;}
-.rc-right{text-align:right;}
-.rc-raw{font-size:13px;font-weight:700;display:block;}
-.rc-raw.m{color:var(--mark);}
-.rc-raw.a{color:var(--allie);}
-.rc-cooked{font-size:12px;color:#555;display:block;font-weight:700;}
-
-.sep{height:1px;background:rgba(0,0,0,.06);margin:0 18px;}
-
-/* totals */
-.totals-bar{
-  padding:14px 16px;
-  background:rgba(0,0,0,.03);
-  border-top:1px solid var(--border);
-  display:flex;flex-direction:row;gap:8px;
-  flex-wrap:nowrap;
-}
-.tot{
-  flex:1;min-width:0;
-  background:#fff;
-  border:1px solid rgba(0,0,0,.1);
-  border-radius:12px;padding:10px 4px;
-  text-align:center;
-  position:relative;overflow:hidden;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
-}
-.tot::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-}
-.tot.mk::before{background:linear-gradient(90deg,var(--mark),transparent);}
-.tot.al::before{background:linear-gradient(90deg,var(--allie),transparent);}
-.tot-val{font-size:17px;font-weight:800;line-height:1;}
-.tot-val.m{color:var(--mark);}
-.tot-val.a{color:var(--allie);}
-.tot-lbl{font-size:9px;color:#666;margin-top:4px;text-transform:uppercase;letter-spacing:.5px;line-height:1.3;font-weight:600;}
-
-/* empty */
-.empty{
-  text-align:center;padding:80px 30px;
-  max-width:480px;margin:0 auto;
-}
-.empty-icon{font-size:64px;display:block;margin-bottom:16px;opacity:.7;}
-.empty h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px;}
-.empty p{font-size:14px;color:var(--muted);font-weight:300;line-height:1.6;}
-
-.fn{text-align:center;padding:10px 0 2px;font-size:10px;color:#aaa;font-style:italic;max-width:480px;margin:0 auto;letter-spacing:.5px;}
+.fn { text-align:center; padding:10px 0 4px; font-size:10px; color:#bbb; font-style:italic; max-width:480px; margin:0 auto; }
 </style>
 </head>
 <body>
-
-<div class="glow glow1" id="glow1"></div>
-<div class="glow glow2" id="glow2"></div>
 
 <div class="hdr">
   <div class="hdr-inner">
@@ -328,200 +277,233 @@ body::before{
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  MEAL DATA  (all proteins verified, quantities match spreadsheet)
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+//  Unsplash photo IDs — free, no API key needed
+//  Format: https://images.unsplash.com/photo-[ID]?w=600&q=80&fit=crop
+// ══════════════════════════════════════════════
+const IMGS = {
+  'Chicken Mince + Rice':
+    'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&q=80&fit=crop',
+  'Roast Chicken + Air Fry Potatoes + Salad':
+    'https://images.unsplash.com/photo-1598103442097-8b74394b95c3?w=600&q=80&fit=crop',
+  'Roast Chicken + Corn, Beans & Carrot':
+    'https://images.unsplash.com/photo-1598103442097-8b74394b95c3?w=600&q=80&fit=crop',
+  'Chicken Stir Fry + Soba Noodles':
+    'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80&fit=crop',
+  'Scrambled Eggs + Sourdough':
+    'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&q=80&fit=crop',
+  'Egg Wrap':
+    'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&q=80&fit=crop',
+  'Eggs + Smashed Avo':
+    'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600&q=80&fit=crop',
+  'Mediterranean Chicken':
+    'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80&fit=crop',
+  'Slow Cook Roast Beef':
+    'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80&fit=crop',
+  'Baked Chicken Risotto':
+    'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=600&q=80&fit=crop',
+  'Tortilla Boats':
+    'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600&q=80&fit=crop',
+};
+
 const COLOURS = {
-  'Chicken Mince + Rice':['#f97316','#7c2d12'],
-  'Roast Chicken + Air Fry Potatoes + Salad':['#a78bfa','#3b1f6e'],
-  'Roast Chicken + Corn, Beans & Carrot':['#34d399','#064e3b'],
-  'Chicken Stir Fry + Soba Noodles':['#fb923c','#7c2d12'],
-  'Scrambled Eggs + Sourdough':['#fbbf24','#78350f'],
-  'Egg Wrap':['#38bdf8','#0c4a6e'],
-  'Eggs + Smashed Avo':['#4ade80','#14532d'],
-  'Mediterranean Chicken':['#e879f9','#581c87'],
-  'Slow Cook Roast Beef':['#f87171','#7f1d1d'],
-  'Baked Chicken Risotto':['#a3e635','#365314'],
-  'Tortilla Boats':['#fb923c','#431407'],
+  'Chicken Mince + Rice':                          '#f97316',
+  'Roast Chicken + Air Fry Potatoes + Salad':      '#a78bfa',
+  'Roast Chicken + Corn, Beans & Carrot':          '#34d399',
+  'Chicken Stir Fry + Soba Noodles':               '#fb923c',
+  'Scrambled Eggs + Sourdough':                    '#fbbf24',
+  'Egg Wrap':                                      '#38bdf8',
+  'Eggs + Smashed Avo':                            '#4ade80',
+  'Mediterranean Chicken':                         '#e879f9',
+  'Slow Cook Roast Beef':                          '#f87171',
+  'Baked Chicken Risotto':                         '#a3e635',
+  'Tortilla Boats':                                '#fb923c',
 };
 
+// ══════════════════════════════════════════════
+//  MEAL DATA — proteins verified, quantities match spreadsheet
+// ══════════════════════════════════════════════
 const M = {
-  'Chicken Mince + Rice':{
-    e:'🍚',tag:'Mon & Fri',mk:490,ak:451,mp:43,ap:41,
+  'Chicken Mince + Rice': {
+    e:'🍚', tag:'Mon & Fri', mk:490, ak:451, mp:43, ap:41,
     sub:'Mince + rice + veg — the trusty weeknight special',
-    tip:{icon:'🕐',text:'Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.'},
+    tip:{icon:'🕐', text:'Brown mince, add tomatoes & veg, simmer 15 mins. Cook rice separately then combine.'},
     ings:[
-      {n:'Chicken mince',rc:true,mr:'180g raw',mc:'~130g cooked',ar:'170g raw',ac:'~110g cooked'},
-      {n:'Rice (dry)',rc:true,mr:'50g dry',mc:'~150g cooked',ar:'50g dry',ac:'~150g cooked'},
-      {n:'Tinned flavoured tomatoes',m:'200g',a:'200g'},
-      {n:'Green beans',m:'40g',a:'40g'},
-      {n:'Carrot',m:'30g',a:'30g'},
-      {n:'Red onion',m:'15g',a:'15g'},
-      {n:'Mushrooms',m:null,a:'40g',ao:true},
+      {n:'Chicken mince', rc:true, mr:'180g raw', mc:'~130g cooked', ar:'170g raw', ac:'~110g cooked'},
+      {n:'Rice (dry)',    rc:true, mr:'50g dry',  mc:'~150g cooked', ar:'50g dry',  ac:'~150g cooked'},
+      {n:'Tinned flavoured tomatoes', m:'200g', a:'200g'},
+      {n:'Green beans',  m:'40g',  a:'40g'},
+      {n:'Carrot',       m:'30g',  a:'30g'},
+      {n:'Red onion',    m:'15g',  a:'15g'},
+      {n:'Mushrooms',    m:null,   a:'40g', ao:true},
     ]
   },
-  'Roast Chicken + Air Fry Potatoes + Salad':{
-    e:'🍗',tag:'Tuesday',mk:542,ak:472,mp:61,ap:56,
-    sub:'Crispy spuds + roast chicken over fresh salad',
-    tip:{icon:'🍟',text:'Potatoes: 180°C 12–15 mins → crank to 200°C for 6–8 mins. Salt AFTER cooking!'},
+  'Roast Chicken + Air Fry Potatoes + Salad': {
+    e:'🍗', tag:'Tuesday', mk:542, ak:472, mp:61, ap:56,
+    sub:'Crispy air fry spuds + roast chicken over fresh salad',
+    tip:{icon:'🍟', text:'Potatoes: 180°C 12–15 mins → crank to 200°C for 6–8 mins. Salt AFTER cooking!'},
     ings:[
-      {n:'Roast chicken (cooked)',m:'180g',a:'165g'},
-      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
-      {n:'Olive oil (for potatoes)',m:'5ml',a:'5ml'},
-      {n:'Tomato',m:'30g',a:'30g'},
-      {n:'Carrot',m:'25g',a:'25g'},
-      {n:'Capsicum',m:'25g',a:'25g'},
-      {n:'Gherkin',m:'20g',a:null,mo:true},
-      {n:'Beetroot (canned)',m:null,a:'30g',ao:true},
+      {n:'Roast chicken (cooked)', m:'180g', a:'165g'},
+      {n:'Potatoes', rc:true, mr:'220g raw', mc:'~165g cooked', ar:'180g raw', ac:'~135g cooked'},
+      {n:'Olive oil (for potatoes)', m:'5ml', a:'5ml'},
+      {n:'Tomato',    m:'30g', a:'30g'},
+      {n:'Carrot',    m:'25g', a:'25g'},
+      {n:'Capsicum',  m:'25g', a:'25g'},
+      {n:'Gherkin',   m:'20g', a:null, mo:true},
+      {n:'Beetroot (canned)', m:null, a:'30g', ao:true},
     ]
   },
-  'Roast Chicken + Corn, Beans & Carrot':{
-    e:'🌽',tag:'Saturday',mk:542,ak:462,mp:63,ap:56,
+  'Roast Chicken + Corn, Beans & Carrot': {
+    e:'🌽', tag:'Saturday', mk:542, ak:462, mp:63, ap:56,
     sub:'Same great roast chicken, heartier veg combo',
-    tip:{icon:'🍟',text:'Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.'},
+    tip:{icon:'🍟', text:'Air fry potatoes as usual. Use no-added-salt corn kernels — tinned is fine.'},
     ings:[
-      {n:'Roast chicken (cooked)',m:'180g',a:'160g'},
-      {n:'Potatoes',rc:true,mr:'220g raw',mc:'~165g cooked',ar:'180g raw',ac:'~135g cooked'},
-      {n:'Corn kernels (no added salt)',m:'70g',a:'70g'},
-      {n:'Green beans',m:'50g',a:'50g'},
-      {n:'Carrot',m:'40g',a:'40g'},
+      {n:'Roast chicken (cooked)', m:'180g', a:'160g'},
+      {n:'Potatoes', rc:true, mr:'220g raw', mc:'~165g cooked', ar:'180g raw', ac:'~135g cooked'},
+      {n:'Corn kernels (no added salt)', m:'70g', a:'70g'},
+      {n:'Green beans', m:'50g', a:'50g'},
+      {n:'Carrot',      m:'40g', a:'40g'},
     ]
   },
-  'Chicken Stir Fry + Soba Noodles':{
-    e:'🥡',tag:'Wednesday',mk:553,ak:476,mp:55,ap:49,
+  'Chicken Stir Fry + Soba Noodles': {
+    e:'🥡', tag:'Wednesday', mk:553, ak:476, mp:55, ap:49,
     sub:'Weigh noodles dry — they triple in size when cooked!',
-    tip:{icon:'⏱',text:'Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.'},
+    tip:{icon:'⏱', text:'Soba: boil 5 mins, rinse cold. Chicken: stir fry 8–10 mins. Veg in last 3 mins.'},
     ings:[
-      {n:'Chicken breast/thigh',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'160g raw',ac:'~98g cooked'},
-      {n:'Japanese Soba Noodles',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
-      {n:'Broccoli',m:'50g',a:'40g'},
-      {n:'Capsicum',m:'50g',a:'50g'},
-      {n:'Corn kernels',m:'40g',a:'40g'},
-      {n:'Red onion',m:'15g',a:'15g'},
-      {n:'Olive oil',m:'5ml',a:'5ml'},
+      {n:'Chicken breast/thigh', rc:true, mr:'180g raw', mc:'~135g cooked', ar:'160g raw', ac:'~98g cooked'},
+      {n:'Japanese Soba Noodles', rc:true, mr:'70g dry', mc:'~210g cooked', ar:'55g dry', ac:'~165g cooked'},
+      {n:'Broccoli',     m:'50g', a:'40g'},
+      {n:'Capsicum',     m:'50g', a:'50g'},
+      {n:'Corn kernels', m:'40g', a:'40g'},
+      {n:'Red onion',    m:'15g', a:'15g'},
+      {n:'Olive oil',    m:'5ml', a:'5ml'},
     ]
   },
-  'Scrambled Eggs + Sourdough':{
-    e:'🍳',tag:'Thu & Sun',mk:375,ak:375,mp:22,ap:22,
-    sub:'Quick, clean, comforting. Optional veg welcome.',
-    tip:{icon:'🧈',text:'5g butter per person. Low heat, creamy scramble — pull off heat while slightly wet!'},
+  'Scrambled Eggs + Sourdough': {
+    e:'🍳', tag:'Thu & Sun', mk:375, ak:375, mp:22, ap:22,
+    sub:'Quick, clean and comforting. Optional veg welcome.',
+    tip:{icon:'🧈', text:'5g butter per person. Low heat, creamy scramble — pull off heat while slightly wet!'},
     ings:[
-      {n:'Whole eggs',m:'3 eggs (150g)',a:'3 eggs (150g)'},
-      {n:'Ploughmans sourdough',m:'1 slice (35g)',a:'1 slice (35g)'},
-      {n:'Butter',m:'5g',a:'5g'},
-      {n:'Optional veg (spinach / mushroom / tomato)',m:'to taste',a:'to taste'},
+      {n:'Whole eggs',   m:'3 eggs (150g)', a:'3 eggs (150g)'},
+      {n:'Ploughmans sourdough', m:'1 slice (35g)', a:'1 slice (35g)'},
+      {n:'Butter',       m:'5g', a:'5g'},
+      {n:'Optional veg (spinach / mushroom / tomato)', m:'to taste', a:'to taste'},
     ]
   },
-  'Egg Wrap':{
-    e:'🌯',tag:'Thu & Sun',mk:522,ak:432,mp:41,ap:31,
+  'Egg Wrap': {
+    e:'🌯', tag:'Thu & Sun', mk:522, ak:432, mp:41, ap:31,
     sub:'Two wraps makes it a proper, filling dinner',
-    tip:{icon:'💡',text:'Warm wraps in a dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.'},
+    tip:{icon:'💡', text:'Warm wraps in dry pan 30 secs each side. Fill with scrambled eggs + roast chicken.'},
     ings:[
-      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
-      {n:'Small wholemeal wraps',m:'2 wraps (80g)',a:'2 wraps (80g)'},
-      {n:'Fresh spinach',m:'20g',a:'20g'},
-      {n:'Capsicum',m:'30g',a:'30g'},
-      {n:'Roast chicken (sliced)',m:'~45g cooked',a:'~35g cooked'},
+      {n:'Whole eggs',            m:'3 eggs (150g)', a:'2 eggs (100g)'},
+      {n:'Small wholemeal wraps', m:'2 wraps (80g)', a:'2 wraps (80g)'},
+      {n:'Fresh spinach',         m:'20g', a:'20g'},
+      {n:'Capsicum',              m:'30g', a:'30g'},
+      {n:'Roast chicken (sliced)', m:'~45g cooked', a:'~35g cooked'},
     ]
   },
-  'Eggs + Smashed Avo':{
-    e:'🥑',tag:'Thu & Sun',mk:456,ak:370,mp:27,ap:20,
+  'Eggs + Smashed Avo': {
+    e:'🥑', tag:'Thu & Sun', mk:456, ak:370, mp:27, ap:20,
     sub:'Weekend brunch vibes for dinner — weigh that avo!',
-    tip:{icon:'⚖️',text:'Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!'},
+    tip:{icon:'⚖️', text:'Weigh the AvoFresh — 40g is just a small scoop. Dead easy to over-pour!'},
     ings:[
-      {n:'Whole eggs',m:'3 eggs (150g)',a:'2 eggs (100g)'},
-      {n:'Smashed avo (AvoFresh)',m:'40g',a:'30g'},
-      {n:'Sourdough',m:'2 slices (70g)',a:'2 slices (70g)'},
+      {n:'Whole eggs',             m:'3 eggs (150g)', a:'2 eggs (100g)'},
+      {n:'Smashed avo (AvoFresh)', m:'40g', a:'30g'},
+      {n:'Sourdough',              m:'2 slices (70g)', a:'2 slices (70g)'},
     ]
   },
-  'Mediterranean Chicken':{
-    e:'🫒',tag:'Swap — slow cook',mk:486,ak:403,mp:45,ap:34,
+  'Mediterranean Chicken': {
+    e:'🫒', tag:'Swap — slow cook', mk:486, ak:403, mp:45, ap:34,
     sub:'Chuck it in the morning, dinner sorts itself out',
-    tip:{icon:'🐌',text:'Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!'},
+    tip:{icon:'🐌', text:'Slow cook 6–7 hrs LOW or 3–4 hrs HIGH. Chicken just falls apart — absolutely mint!'},
     ings:[
-      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
-      {n:'Vine tomatoes',m:'200g',a:'200g'},
-      {n:'Baby potatoes (whole)',m:'150g',a:'120g'},
-      {n:'Onion',m:'40g',a:'40g'},
-      {n:'Capsicum',m:'75g',a:'75g'},
-      {n:'Olives (low sodium)',m:'15g',a:'15g'},
-      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
-      {n:'Low sodium chicken stock',m:'100ml',a:'100ml'},
-      {n:'Olive oil',m:'5ml',a:'5ml'},
+      {n:'Chicken breast', rc:true, mr:'180g raw', mc:'~135g cooked', ar:'130g raw', ac:'~98g cooked'},
+      {n:'Vine tomatoes',          m:'200g', a:'200g'},
+      {n:'Baby potatoes (whole)',  m:'150g', a:'120g'},
+      {n:'Onion',                  m:'40g',  a:'40g'},
+      {n:'Capsicum',               m:'75g',  a:'75g'},
+      {n:'Olives (low sodium)',    m:'15g',  a:'15g'},
+      {n:'Garlic (2 cloves)',      m:'6g',   a:'6g'},
+      {n:'Low sodium chicken stock', m:'100ml', a:'100ml'},
+      {n:'Olive oil',              m:'5ml',  a:'5ml'},
     ]
   },
-  'Slow Cook Roast Beef':{
-    e:'🥩',tag:'Swap — slow cook',mk:574,ak:460,mp:70,ap:56,
-    sub:'Topside or silverside. Sear it first for proper flavour.',
-    tip:{icon:'🔪',text:'Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.'},
+  'Slow Cook Roast Beef': {
+    e:'🥩', tag:'Swap — slow cook', mk:574, ak:460, mp:70, ap:56,
+    sub:'Topside or silverside — sear it first for proper flavour',
+    tip:{icon:'🔪', text:'Sear beef in olive oil before the slow cooker. 7–8 hrs LOW or 4–5 hrs HIGH.'},
     ings:[
-      {n:'Roast beef (topside/silverside)',m:'200g cooked',a:'160g cooked'},
-      {n:'Baby potatoes (whole)',m:'200g',a:'160g'},
-      {n:'Carrot',m:'100g',a:'80g'},
-      {n:'Capsicum',m:'75g',a:'75g'},
-      {n:'Onion',m:'40g',a:'40g'},
-      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
-      {n:'No-added-salt beef stock',m:'150ml',a:'150ml'},
-      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
-      {n:'Low sodium Worcestershire',m:'5ml',a:'5ml'},
-      {n:'Olive oil (for searing)',m:'5ml',a:'5ml'},
+      {n:'Roast beef (topside/silverside)', m:'200g cooked', a:'160g cooked'},
+      {n:'Baby potatoes (whole)', m:'200g', a:'160g'},
+      {n:'Carrot',    m:'100g', a:'80g'},
+      {n:'Capsicum',  m:'75g',  a:'75g'},
+      {n:'Onion',     m:'40g',  a:'40g'},
+      {n:'Garlic (2 cloves)',      m:'6g',   a:'6g'},
+      {n:'No-added-salt beef stock', m:'150ml', a:'150ml'},
+      {n:'Tomato paste (no added salt)', m:'15g', a:'15g'},
+      {n:'Low sodium Worcestershire', m:'5ml', a:'5ml'},
+      {n:'Olive oil (for searing)',   m:'5ml', a:'5ml'},
     ]
   },
-  'Baked Chicken Risotto':{
-    e:'🍲',tag:'Swap — oven',mk:657,ak:510,mp:56,ap:42,
+  'Baked Chicken Risotto': {
+    e:'🍲', tag:'Swap — oven', mk:657, ak:510, mp:56, ap:42,
     sub:'Bake covered 180°C 35–40 mins, uncovered last 10',
-    tip:{icon:'📍',text:'Weigh arborio rice DRY — it triples in volume. Don\'t skip the parmesan on top!'},
+    tip:{icon:'📍', text:'Weigh arborio rice DRY — it triples in volume. Don\'t skip the parmesan on top!'},
     ings:[
-      {n:'Chicken breast',rc:true,mr:'180g raw',mc:'~135g cooked',ar:'130g raw',ac:'~98g cooked'},
-      {n:'Arborio rice',rc:true,mr:'70g dry',mc:'~210g cooked',ar:'55g dry',ac:'~165g cooked'},
-      {n:'Capsicum',m:'75g',a:'75g'},
-      {n:'Corn kernels (no added salt)',m:'40g',a:'30g'},
-      {n:'Broccoli',m:'50g',a:'40g'},
-      {n:'Onion',m:'40g',a:'40g'},
-      {n:'Garlic (2 cloves)',m:'6g',a:'6g'},
-      {n:'No-added-salt chicken stock',m:'200ml',a:'200ml'},
-      {n:'Tomato paste (no added salt)',m:'15g',a:'15g'},
-      {n:'Parmesan (topping)',m:'10g',a:'10g'},
-      {n:'Olive oil',m:'5ml',a:'5ml'},
+      {n:'Chicken breast', rc:true, mr:'180g raw', mc:'~135g cooked', ar:'130g raw', ac:'~98g cooked'},
+      {n:'Arborio rice', rc:true, mr:'70g dry', mc:'~210g cooked', ar:'55g dry', ac:'~165g cooked'},
+      {n:'Capsicum',   m:'75g', a:'75g'},
+      {n:'Corn kernels (no added salt)', m:'40g', a:'30g'},
+      {n:'Broccoli',   m:'50g', a:'40g'},
+      {n:'Onion',      m:'40g', a:'40g'},
+      {n:'Garlic (2 cloves)', m:'6g', a:'6g'},
+      {n:'No-added-salt chicken stock', m:'200ml', a:'200ml'},
+      {n:'Tomato paste (no added salt)', m:'15g', a:'15g'},
+      {n:'Parmesan (topping)', m:'10g', a:'10g'},
+      {n:'Olive oil',  m:'5ml', a:'5ml'},
     ]
   },
-  'Tortilla Boats':{
-    e:'🌮',tag:'Swap',mk:495,ak:408,mp:57,ap:47,
+  'Tortilla Boats': {
+    e:'🌮', tag:'Swap', mk:495, ak:408, mp:57, ap:47,
     sub:'Season with paprika, cumin, garlic powder — no added salt',
-    tip:{icon:'🌮',text:'Toast empty tortillas in dry pan until crispy. Fill and eat straight away!'},
+    tip:{icon:'🌮', text:'Toast empty tortillas in dry pan until crispy. Fill and eat straight away!'},
     ings:[
-      {n:'Wholemeal tortillas (24g each)',m:'2 (48g)',a:'2 (48g)'},
-      {n:'Chicken breast (cooked, sliced)',m:'150g cooked',a:'120g cooked'},
-      {n:'Reduced fat cheese (grated)',m:'20g',a:'15g'},
-      {n:'Capsicum (sliced)',m:'40g',a:'40g'},
-      {n:'Spinach',m:'20g',a:'20g'},
-      {n:'Tomato (diced)',m:'30g',a:'30g'},
-      {n:'Greek yoghurt (topping)',m:'30g',a:'30g'},
+      {n:'Wholemeal tortillas (24g each)', m:'2 (48g)', a:'2 (48g)'},
+      {n:'Chicken breast (cooked, sliced)', m:'150g cooked', a:'120g cooked'},
+      {n:'Reduced fat cheese (grated)',    m:'20g', a:'15g'},
+      {n:'Capsicum (sliced)',              m:'40g', a:'40g'},
+      {n:'Spinach',                        m:'20g', a:'20g'},
+      {n:'Tomato (diced)',                 m:'30g', a:'30g'},
+      {n:'Greek yoghurt (topping)',        m:'30g', a:'30g'},
     ]
   },
 };
 
-const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const PLAN={
-  Monday:   {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Tuesday:  {def:'Roast Chicken + Air Fry Potatoes + Salad',opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Wednesday:{def:'Chicken Stir Fry + Soba Noodles',opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Thursday: {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Friday:   {def:'Chicken Mince + Rice',opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Saturday: {def:'Roast Chicken + Corn, Beans & Carrot',opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
-  Sunday:   {def:'Scrambled Eggs + Sourdough',opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const PLAN = {
+  Monday:    {def:'Chicken Mince + Rice',                         opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Tuesday:   {def:'Roast Chicken + Air Fry Potatoes + Salad',     opts:['Roast Chicken + Air Fry Potatoes + Salad','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Wednesday: {def:'Chicken Stir Fry + Soba Noodles',              opts:['Chicken Stir Fry + Soba Noodles','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Thursday:  {def:'Scrambled Eggs + Sourdough',                   opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Friday:    {def:'Chicken Mince + Rice',                         opts:['Chicken Mince + Rice','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Saturday:  {def:'Roast Chicken + Corn, Beans & Carrot',         opts:['Roast Chicken + Corn, Beans & Carrot','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
+  Sunday:    {def:'Scrambled Eggs + Sourdough',                   opts:['Scrambled Eggs + Sourdough','Egg Wrap','Eggs + Smashed Avo','Mediterranean Chicken','Slow Cook Roast Beef','Baked Chicken Risotto','Tortilla Boats']},
 };
 
-const TODAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
-let curDay=null,curMeal=null;
+const TODAY = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+let curDay = null, curMeal = null;
 
-// day number within month
-const todayDate = new Date();
+function buildDays() {
+  // Calculate Monday of current week
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + mondayOffset);
 
-function buildDays(){
-  const row = document.getElementById('daysRow');
-  row.innerHTML = DAYS.map((d,i)=>{
-    const date = new Date(); date.setDate(date.getDate()-(new Date().getDay()==0?6:new Date().getDay()-1)+i);
+  document.getElementById('daysRow').innerHTML = DAYS.map((d, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
     const dn = date.getDate();
     return `<button class="day-btn${d===TODAY?' today':''}" onclick="pickDay('${d}')">
       <span class="day-short">${d.slice(0,3)}</span>
@@ -529,48 +511,48 @@ function buildDays(){
       <span class="day-dot"></span>
     </button>`;
   }).join('');
+
   document.getElementById('todayBadge').textContent = TODAY;
-  document.getElementById('subline').textContent = 'What\'s for dinner tonight?';
+  document.getElementById('subline').textContent = "What's for dinner tonight?";
 }
 
-function pickDay(d){
-  curDay=d; curMeal=PLAN[d].def;
-  document.querySelectorAll('.day-btn').forEach((el,i)=>el.classList.toggle('active',DAYS[i]===d));
+function pickDay(d) {
+  curDay = d;
+  curMeal = PLAN[d].def;
+  document.querySelectorAll('.day-btn').forEach((el,i) => el.classList.toggle('active', DAYS[i]===d));
   document.querySelectorAll('.day-btn')[DAYS.indexOf(d)]?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  document.getElementById('pickerOuter').style.display='block';
-  buildPicker(); buildCard();
+  document.getElementById('pickerOuter').style.display = 'block';
+  buildPicker();
+  buildCard();
 }
 
-function buildPicker(){
-  const opts=PLAN[curDay].opts;
-  document.getElementById('pickerRow').innerHTML=opts.map(o=>{
-    const [c1]=COLOURS[o]||['#fff'];
-    const short=o.length>24?o.split(' ').slice(0,3).join(' ')+'…':o;
+function buildPicker() {
+  const opts = PLAN[curDay].opts;
+  document.getElementById('pickerRow').innerHTML = opts.map(o => {
+    const col = COLOURS[o] || '#888';
+    const short = o.length > 24 ? o.split(' ').slice(0,3).join(' ')+'…' : o;
     return `<button class="meal-chip${o===curMeal?' active':''}" onclick="pickMeal('${o.replace(/'/g,"\\'")}')">
-      <span class="meal-chip-dot" style="background:${c1}${o===curMeal?'':'55'}"></span>
+      <span class="meal-chip-dot" style="background:${o===curMeal?'rgba(255,255,255,0.8)':col}"></span>
       ${M[o].e} ${short}
     </button>`;
   }).join('');
 }
 
-function pickMeal(meal){curMeal=meal;buildPicker();buildCard();}
+function pickMeal(meal) { curMeal = meal; buildPicker(); buildCard(); }
 
-function setGlow(c1){
-  document.getElementById('glow1').style.background=`${c1}20`;
-}
+function buildCard() {
+  const m = M[curMeal];
+  if (!m) return;
+  const col = COLOURS[curMeal] || '#f97316';
+  const img = IMGS[curMeal] || '';
 
-function buildCard(){
-  const m=M[curMeal]; if(!m) return;
-  const [c1,c2]=COLOURS[curMeal]||['#f97316','#7c2d12'];
-  setGlow(c1);
-
-  let ings='';
-  m.ings.forEach((ing,i)=>{
-    if(i>0) ings+=`<div class="sep"></div>`;
-    if(ing.rc){
-      ings+=`
+  let ings = '';
+  m.ings.forEach((ing, i) => {
+    if (i > 0) ings += '<div class="sep"></div>';
+    if (ing.rc) {
+      ings += `
         <div class="ing-row"><div class="ing-name"><strong>${ing.n}</strong></div></div>
-        <div class="rc-wrap" style="--meal-c1:${c1}">
+        <div class="rc-wrap" style="--rc-color:${col}">
           <div class="rc-head">⚖ Weigh raw — serve as cooked</div>
           <div class="rc-row">
             <span class="rc-who">💙 Mark</span>
@@ -588,51 +570,70 @@ function buildCard(){
           </div>
         </div>`;
     } else {
-      const tag=ing.mo?`<span class="ing-only">💙 Mark only</span>`
-               :ing.ao?`<span class="ing-only">💗 Allie only</span>`:'';
-      const mq=ing.m&&!ing.ao?`<span class="qty m">💙 ${ing.m}</span>`:'';
-      const aq=ing.a&&!ing.mo?`<span class="qty a">💗 ${ing.a}</span>`:'';
-      ings+=`<div class="ing-row">
+      const tag = ing.mo ? `<span class="ing-only">💙 Mark only</span>`
+                : ing.ao ? `<span class="ing-only">💗 Allie only</span>` : '';
+      const mq = ing.m && !ing.ao ? `<span class="qty m">💙 ${ing.m}</span>` : '';
+      const aq = ing.a && !ing.mo ? `<span class="qty a">💗 ${ing.a}</span>` : '';
+      ings += `<div class="ing-row">
         <div class="ing-name">${ing.n}${tag}</div>
         <div class="ing-qty">${mq}${aq}</div>
       </div>`;
     }
   });
 
-  document.getElementById('cardWrap').innerHTML=`
-    <div class="hero-card" style="--meal-c1:${c1};--meal-c2:${c2}">
-      <div class="hero-banner">
-        <span class="hero-emoji">${m.e}</span>
-        <div class="hero-tag">🗓 ${m.tag}</div>
-        <div class="hero-title">${curMeal}</div>
-        <div class="hero-sub">${m.sub}</div>
+  document.getElementById('cardWrap').innerHTML = `
+    <div class="hero-card">
+
+      <div class="meal-img-wrap">
+        <img class="meal-img" src="${img}" alt="${curMeal}" loading="lazy"
+             onerror="this.style.display='none'">
+        <div class="meal-img-overlay"></div>
+        <div class="meal-img-content">
+          <div class="meal-tag">🗓 ${m.tag}</div>
+          <div class="meal-title">${curMeal}</div>
+          <div class="meal-sub">${m.sub}</div>
+        </div>
       </div>
+
       <div class="cook-tip">
         <span class="tip-icon">${m.tip.icon}</span>
-        <div class="tip-text"><strong>Chef's tip</strong>${m.tip.text}</div>
+        <div>
+          <div class="tip-label">Chef's Tip</div>
+          <div class="tip-body">${m.tip.text}</div>
+        </div>
       </div>
+
       <div class="ing-section">
         <div class="ing-hd">Ingredients</div>
         ${ings}
       </div>
+
       <div class="totals-bar">
-        <div class="tot mk">
-          <div class="tot-val m">~${m.mk}</div>
-          <div class="tot-lbl">💙 Mark<br>kcal</div>
-        </div>
-        <div class="tot al">
-          <div class="tot-val a">~${m.ak}</div>
-          <div class="tot-lbl">💗 Allie<br>kcal</div>
-        </div>
-        <div class="tot mk">
-          <div class="tot-val m">${m.mp}g</div>
-          <div class="tot-lbl">💙 Mark<br>protein</div>
-        </div>
-        <div class="tot al">
-          <div class="tot-val a">${m.ap}g</div>
-          <div class="tot-lbl">💗 Allie<br>protein</div>
+        <div class="totals-title">Tonight's Nutrition</div>
+        <div class="totals-grid">
+          <div class="tot mk">
+            <div class="tot-stripe"></div>
+            <div class="tot-val m">~${m.mk}</div>
+            <div class="tot-lbl">💙 Mark<br>kcal</div>
+          </div>
+          <div class="tot al">
+            <div class="tot-stripe"></div>
+            <div class="tot-val a">~${m.ak}</div>
+            <div class="tot-lbl">💗 Allie<br>kcal</div>
+          </div>
+          <div class="tot mk">
+            <div class="tot-stripe"></div>
+            <div class="tot-val m">${m.mp}g</div>
+            <div class="tot-lbl">💙 Mark<br>protein</div>
+          </div>
+          <div class="tot al">
+            <div class="tot-stripe"></div>
+            <div class="tot-val a">${m.ap}g</div>
+            <div class="tot-lbl">💗 Allie<br>protein</div>
+          </div>
         </div>
       </div>
+
     </div>
     <div class="fn">Quantities match your spreadsheet ✦ Z</div>`;
 }
